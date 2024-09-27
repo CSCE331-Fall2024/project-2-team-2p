@@ -1,1 +1,0 @@
-DROP TABLE menuitemsorders, orders, ingredientsmenuitems, employees, menuitems, ingredients;
