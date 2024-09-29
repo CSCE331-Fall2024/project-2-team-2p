@@ -1,12 +1,15 @@
-import datetime
+from datetime import datetime, timedelta
 import json
 import random
+import psycopg2
 
-MENU_FILE = "menu_items.json"
-INGREDIENTS_FILE = "ingredients.json"
+MENU_FILE = "database_population\menu_items.json"
+INGREDIENTS_FILE = "database_population\ingredients.json"
 
 TYPES = ["BOWL", "PLATE", "DOUBLE PLATE"]
 PRICES = {"BOWL" : 8.99, "PLATE" : 9.99, "DOUBLE PLATE" : 11.99}
+DAILY_SALES = 2750
+NUM_DAYS = 273
 
 class MenuItem:
     def __init__(self, id, name, ingredients, add_cost, entree) -> None:
@@ -32,12 +35,12 @@ class Ingredient:
         return f"Threshold: {self.threshold}, Price: {self.price}, Unit: {self.unit}, Stock: {self.stock}"
 
 class Order:
-    def __init__(self, id, server, price, order_type) -> None:
+    def __init__(self, id, server, price, order_type, timestamp) -> None:
         self.id = id
         self.server = server
         self.price = price
         self.order_type = order_type
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = timestamp
 
     def __repr__(self) -> str:
         return f"Server: {self.server}, Price: {self.price}, Type: {self.order_type}, Timestamp: {self.timestamp}"
@@ -73,7 +76,7 @@ def load_data():
 def get_order_type():
     return random.choice(TYPES)
 
-def create_random_order(order_id, menu_items):
+def create_random_order(order_id, menu_items, timestamp):
     """
     Creates a random order given an order_id and menu_items (the dictionary from the load_data function)
     This will automatically add the additional cost of menu items to the cost
@@ -92,46 +95,127 @@ def create_random_order(order_id, menu_items):
 
     server_id = random.randint(2, 7)
 
-    order = Order(id=order_id, server=server_id, price=total_price, order_type=TYPES.index(order_type))
+    order = Order(id=order_id, server=server_id, price=total_price, order_type=TYPES.index(order_type), timestamp=timestamp)
 
     return order, entrees, side
 
 def write_menu_items_and_ingredients(menu_items, ingredients):
-    """
-    TODO
-    Function to commit the menu items and ingredients as they are to the database
-    Ideally only need to run this once (total)
-    """
+    conn = psycopg2.connect(
+    host="csce-315-db.engr.tamu.edu",
+    database="team_2p_db",
+    user="team_2p",
+    password="pawmo",
+    port="5432"
+    )
 
-    pass
+    cur = conn.cursor()
 
-def write_order(order, entrees, side):
+    ingredient_query = """
+    INSERT INTO ingredients (id, name, stock, threshold, price, unit)
+    VALUES (%s, %s, %s, %s, %s, %s);
+    """
+    for ingredient in ingredients:
+        ing = ingredients[ingredient]
+        data = (ing.id, ing.name, ing.stock, ing.threshold, ing.price, ing.unit)
+        cur.execute(ingredient_query, data)
+
+    menu_query = """
+    INSERT INTO menuitems (id, name, price, entree)
+    VALUES (%s, %s, %s, %s)
+"""
+    for item in menu_items:
+        it = menu_items[item]
+        data = (item.id, it.name, it.add_cost, it.entree)
+        cur.execute(menu_query, data)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def write_join_table(menu_items, ingredients):
+    conn = psycopg2.connect(
+    host="csce-315-db.engr.tamu.edu",
+    database="team_2p_db",
+    user="team_2p",
+    password="pawmo",
+    port="5432"
+    )
+
+    cur = conn.cursor()
+
+    query = """
+    INSERT INTO ingredientsmenuitems (id, ingredientkey, menuitemkey, quantity)
+    VALUES (%s, %s, %s, %s);
+    """
+    i = 1
+    for item in menu_items:
+        for ingredient in menu_items[item].ingredients:
+            data = (i, ingredients[ingredient].id, menu_items[item].id, menu_items[item].ingredients[ingredient])
+            cur.execute(query, data)
+            i += 1
+
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def write_order(order, entrees, side, menuorderID, cur):
     """
     TODO
     Function to commit an order to the database
     Should also run this once
     """
-    pass
+    
+    order_query = """
+    INSERT INTO orders (id, server, price, type, timestamp)
+    VALUES (%s, %s, %s, %s, %s);
+    """
+
+    data = (order.id, order.server, order.price, order.order_type, order.timestamp)
+    cur.execute(order_query, data)
+
+    menuitemsorders_query = """
+    INSERT INTO menuitemsorders (id, menuitemkey, orderkey)
+    VALUES (%s, %s, %s)
+    """
+    for entree in entrees:
+        data = (menuorderID[0], entree.id, order.id)
+        cur.execute(menuitemsorders_query, data)
+        menuorderID[0] += 1
+    
+    data = (menuorderID[0], side.id, order.id)
+    cur.execute(menuitemsorders_query, data)
+    menuorderID[0] += 1 
 
 def main():
     menu_items, ingredients = load_data()
 
-    print(menu_items)
-    print(ingredients)
+    #write_menu_items_and_ingredients(menu_items, ingredients)
+    #write_join_table(menu_items, ingredients)
 
-    print("""
-          
-          #######################################
-          
-          """)
+    dailySales = 0
+    timestamp = datetime.now()
+    orderID = 1
+    menuorderID = [1]
+    conn = psycopg2.connect(
+    host="csce-315-db.engr.tamu.edu",
+    database="team_2p_db",
+    user="team_2p",
+    password="pawmo",
+    port="5432"
+    )
 
-    orders = []
-
-    for i in range(10):
-        orders.append(create_random_order(i, menu_items))
-    
-    for order in orders:
-        print(order)
+    cur = conn.cursor()
+    for i in range(0, NUM_DAYS):
+        while dailySales <= DAILY_SALES:
+            order, entrees, side = create_random_order(order_id=orderID, menu_items=menu_items, timestamp=timestamp)
+            write_order(order, entrees, side, menuorderID, cur)
+            dailySales += order.price
+            orderID += 1
+        dailySales = 0
+        timestamp += timedelta(days=1)
+        conn.commit()
+    cur.close()
+    conn.close()  
 
 if __name__ == "__main__":
     main()
