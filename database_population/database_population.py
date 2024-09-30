@@ -238,22 +238,28 @@ def main():
     all_orders = []
     all_menuitems_orders = []
 
-    # Step 1: Generate orders and save to CSV
     for i in range(0, NUM_DAYS):
-        while dailySales <= DAILY_SALES:
-            order, entrees, side = create_random_order(order_id=orderID, menu_items=menu_items, timestamp=timestamp)
+        timestamp = datetime.now() + timedelta(days = i)
+
+        if timestamp.month in [9, 10, 11, 12] and timestamp.weekday() == 5:
+            sales_multiplier = 1.5
+            daily_target_sales = int(DAILY_SALES * sales_multiplier)
+        else:
+            daily_target_sales = DAILY_SALES
+
+        dailySales = 0
+        while dailySales <= daily_target_sales:
+            current_timestamp = timestamp + timedelta(hours=random.randint(7, 20), minutes=random.randint(0, 59))
+
+            order, entrees, side = create_random_order(order_id=orderID, menu_items=menu_items, timestamp=current_timestamp)
             all_orders.append(order)
             all_menuitems_orders.append((order, entrees, side))
             dailySales += order.price
             orderID += 1
-        dailySales = 0
-        timestamp += timedelta(days=1)
 
-    # Write to CSV files
     write_orders_to_csv('orders.csv', all_orders)
     write_menuitemsorders_to_csv('menuitemsorders.csv', menuorderID, all_menuitems_orders)
 
-    # Step 2: Load CSV data into PostgreSQL
     conn = psycopg2.connect(
         host="csce-315-db.engr.tamu.edu",
         database="team_2p_db",
@@ -262,7 +268,6 @@ def main():
         port="5432"
     )
 
-    # Use the COPY command to load CSV files into the database
     copy_csv_to_db('orders.csv', 'orders', conn)
     copy_csv_to_db('menuitemsorders.csv', 'menuitemsorders', conn)
 
