@@ -1,0 +1,38 @@
+-------PSQL QUERIES TXT-------
+
+Weekly Sales History SELECT date_trunc('week', timestamp) as week, COUNT(*) as total_week FROM orders GROUP BY week ORDER BY week;
+
+Realistic Sales History
+SELECT date_trunc('hour', timestamp) as hour, COUNT(*) as total_hour FROM orders GROUP BY hour ORDER BY hour;
+
+Peak Sales Day
+SELECT date_trunc('hour', timestamp) as day, COUNT(*) as total_day FROM orders GROUP BY day ORDER BY total_day DESC LIMIT 10;
+
+Average Sales Per Day over Day
+SELECT AVG(daily_totals) as avg_orders
+FROM (SELECT DATE_TRUNC('day', timestamp) as order_date, COUNT(*) as daily_orders FROM orders GROUP BY order_date) AS daily_totals;
+
+Average Sales Per Day over Week
+SELECT AVG(weekly_orders) as avg_orders FROM ( SELECT DATE_TRUNC('week', timestamp) as week, COUNT(*) as weekly_orders FROM orders GROUP BY week ) AS weekly_totals;
+
+Average Sales Per Day over Month
+SELECT AVG(monthly_orders) as avg_orders FROM ( SELECT DATE_TRUNC('month', timestamp) as month, COUNT(*) as monthly_orders FROM orders GROUP BY month ) AS monthly_totals; 
+Ingredients sorted by most
+SELECT * FROM ingredients ORDER BY quantity DESC;
+
+Ingredients sorted by least
+
+SELECT * FROM ingredients ORDER BY stock ASC;
+
+
+Most Popular Type
+SELECT type, COUNT(*) as total FROM orders GROUP BY type ORDER BY total DESC;
+
+Ingredients sorted by price (descending)
+ SELECT * FROM ingredients ORDER BY price DESC;
+
+Top 3 Orders of all time
+ SELECT menuitemkey, COUNT(*) as total FROM menuitemsorders GROUP BY menuitemkey ORDER BY total DESC LIMIT 3;
+ Bottom 3 orders of all time
+
+SELECT menuitemkey, COUNT(*) as total FROM menuitemsorders GROUP BY menuitemkey ORDER BY total ASC LIMIT 3;
