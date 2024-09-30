@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 import json
 import random
 import psycopg2
+import csv
+import os
 
 MENU_FILE = "database_population\menu_items.json"
 INGREDIENTS_FILE = "database_population\ingredients.json"
@@ -186,36 +188,91 @@ def write_order(order, entrees, side, menuorderID, cur):
     cur.execute(menuitemsorders_query, data)
     menuorderID[0] += 1 
 
+def write_orders_to_csv(filename, orders):
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['id', 'server', 'price', 'type', 'timestamp'])
+        for order in orders:
+            writer.writerow([order.id, order.server, order.price, order.order_type, order.timestamp])
+
+def write_menuitemsorders_to_csv(filename, menuorderID, orders):
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['id', 'menuitemkey', 'orderkey'])
+        for order, entrees, side in orders:
+            for entree in entrees:
+                writer.writerow([menuorderID[0], entree.id, order.id])
+                menuorderID[0] += 1
+            writer.writerow([menuorderID[0], side.id, order.id])
+            menuorderID[0] += 1
+
+def copy_csv_to_db(filename, table_name, conn):
+    cur = conn.cursor()
+    if filename == 'orders.csv':
+        copy_sql = f"""
+            COPY {table_name}(id, server, price, type, timestamp)
+            FROM STDIN
+            WITH CSV HEADER
+            DELIMITER AS ','
+        """
+    else:
+        copy_sql = f"""
+            COPY {table_name}(id, menuitemkey, orderkey)
+            FROM STDIN
+            WITH CSV HEADER
+            DELIMITER AS ','
+        """
+    with open(filename, 'r') as f:
+        cur.copy_expert(sql=copy_sql, file=f)
+    conn.commit()
+    cur.close()
+
 def main():
     menu_items, ingredients = load_data()
-
-    #write_menu_items_and_ingredients(menu_items, ingredients)
-    #write_join_table(menu_items, ingredients)
 
     dailySales = 0
     timestamp = datetime.now()
     orderID = 1
     menuorderID = [1]
-    conn = psycopg2.connect(
-    host="csce-315-db.engr.tamu.edu",
-    database="team_2p_db",
-    user="team_2p",
-    password="pawmo",
-    port="5432"
-    )
 
-    cur = conn.cursor()
+    all_orders = []
+    all_menuitems_orders = []
+
+    # Step 1: Generate orders and save to CSV
     for i in range(0, NUM_DAYS):
         while dailySales <= DAILY_SALES:
             order, entrees, side = create_random_order(order_id=orderID, menu_items=menu_items, timestamp=timestamp)
-            write_order(order, entrees, side, menuorderID, cur)
+            all_orders.append(order)
+            all_menuitems_orders.append((order, entrees, side))
             dailySales += order.price
             orderID += 1
         dailySales = 0
         timestamp += timedelta(days=1)
-        conn.commit()
-    cur.close()
-    conn.close()  
+
+    # Write to CSV files
+    write_orders_to_csv('orders.csv', all_orders)
+    write_menuitemsorders_to_csv('menuitemsorders.csv', menuorderID, all_menuitems_orders)
+
+    # Step 2: Load CSV data into PostgreSQL
+    conn = psycopg2.connect(
+        host="csce-315-db.engr.tamu.edu",
+        database="team_2p_db",
+        user="team_2p",
+        password="pawmo",
+        port="5432"
+    )
+
+    # Use the COPY command to load CSV files into the database
+    copy_csv_to_db('orders.csv', 'orders', conn)
+    copy_csv_to_db('menuitemsorders.csv', 'menuitemsorders', conn)
+
+    conn.close()
+
+    try:
+        os.remove('orders.csv')
+        os.remove('menuitemsorders.csv')
+    except OSError as e:
+        print(f"Error: {e.strerror} - {e.filename}")
 
 if __name__ == "__main__":
     main()
