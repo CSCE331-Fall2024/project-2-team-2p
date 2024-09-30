@@ -124,7 +124,7 @@ def write_menu_items_and_ingredients(menu_items, ingredients):
     menu_query = """
     INSERT INTO menuitems (id, name, price, entree)
     VALUES (%s, %s, %s, %s)
-"""
+    """
     for item in menu_items:
         it = menu_items[item]
         data = (item.id, it.name, it.add_cost, it.entree)
