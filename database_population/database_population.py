@@ -241,7 +241,7 @@ def main():
     for i in range(0, NUM_DAYS):
         timestamp = datetime.now() + timedelta(days = i)
 
-        if timestamp.month in [9, 10, 11, 12] and timestamp.weekday() == 5:
+        if timestamp.month in [9, 10, 11, 12] and timestamp.weekday() == 4:
             sales_multiplier = 1.5
             daily_target_sales = int(DAILY_SALES * sales_multiplier)
         else:
