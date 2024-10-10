@@ -42,7 +42,7 @@ CREATE TABLE Orders (
     server INT NOT NULL,
     price FLOAT NOT NULL,
     type INT NOT NULL,  -- Enum for {BOWL, PLATE, D PLATE, ...}
-    timestamp DATE NOT NULL,
+    timestamp TIMESTAMP NOT NULL,
     FOREIGN KEY (server) REFERENCES Employees(id)
 );
 
