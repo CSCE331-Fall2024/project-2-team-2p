@@ -9,8 +9,8 @@ Peak Sales Day
 SELECT date_trunc('hour', timestamp) as day, COUNT(*) as total_day FROM orders GROUP BY day ORDER BY total_day DESC LIMIT 10;
 
 Average Sales Per Day over Day
-SELECT AVG(daily_totals) as avg_orders
-FROM (SELECT DATE_TRUNC('day', timestamp) as order_date, COUNT(*) as daily_orders FROM orders GROUP BY order_date) AS daily_totals;
+SELECT AVG(daily_orders) AS avg_orders FROM (SELECT DATE_TRUNC('day', timestamp) AS order_date, COUNT(*) AS daily_orders FROM orders GROUP BY order_date) AS daily_totals;
+
 
 Average Sales Per Day over Week
 SELECT AVG(weekly_orders) as avg_orders FROM ( SELECT DATE_TRUNC('week', timestamp) as week, COUNT(*) as weekly_orders FROM orders GROUP BY week ) AS weekly_totals;
@@ -18,7 +18,7 @@ SELECT AVG(weekly_orders) as avg_orders FROM ( SELECT DATE_TRUNC('week', timesta
 Average Sales Per Day over Month
 SELECT AVG(monthly_orders) as avg_orders FROM ( SELECT DATE_TRUNC('month', timestamp) as month, COUNT(*) as monthly_orders FROM orders GROUP BY month ) AS monthly_totals; 
 Ingredients sorted by most
-SELECT * FROM ingredients ORDER BY quantity DESC;
+SELECT * FROM ingredients ORDER BY stock DESC;
 
 Ingredients sorted by least
 
