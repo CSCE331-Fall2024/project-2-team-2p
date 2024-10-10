@@ -10,3 +10,5 @@ Sorry to whoever has to do this but the structure is as follows
 - For submitting, all of the data is kept on the client. When you push to backend, the entire list is commited
     - I know this is an awful design, but just drop the table and write to it again (for the demo)
 - This should be enough to connect the frontend to the backend, the rest is just frontend logic
+
+- Use \d+ 'tablename' to check datatypes
