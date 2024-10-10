@@ -131,7 +131,7 @@ public class DBConnection {
             stmt.setInt(2, order.server);
             stmt.setDouble(3, order.price);
             stmt.setInt(4, order.type);
-            stmt.setDate(5, order.timestamp);
+            stmt.setTimestamp(5, order.timestamp);
             stmt.executeUpdate(); 
             stmt.close(); 
         }
@@ -279,6 +279,130 @@ public class DBConnection {
             e.printStackTrace();
         }
     }
+
+    /*============ FUNCTIONS FOR BUILDING MANAGER VIEW ============*/
+
+    private void populateMenuItems(ArrayList<HashMap<String, Object>> menuItems){
+        ResultSet result = null;
+        PreparedStatement stmt = null;
+        try {
+            String sql = "select * from menuitems";
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
+ 
+            while (result.next()) {
+                String name = result.getString("name");
+                double price = result.getDouble("price");
+                int entree = result.getInt("entree");
+                HashMap<String, Object> currentMenuItem = new HashMap<>();
+                beefBroccoli.put("Name", name);
+                beefBroccoli.put("Additional Cost", price);
+                beefBroccoli.put("Entree", entree);
+                menuItems.add(currentMenuItem);
+            }
+            
+            stmt.close();
+            result.close();
+        }
+        catch (SQLException e) {
+             System.out.println(e);
+        }
+    }
+
+    private void populateIngredients(ArrayList<HashMap<String, Object>> ingredients){
+        ResultSet result = null;
+        PreparedStatement stmt = null;
+        try {
+            String sql = "select * from ingredients";
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
+ 
+            while (result.next()) {
+                String name = result.getString("name");
+                int stock = result.getInt("stock");
+                int threshold = result.getInt("threshold");
+                double price = result.getDouble("price");
+                String unit = result.getString("unit");
+                HashMap<String, Object> currentIngredient = new HashMap<>();
+                currentIngredient.put("Name", name);
+                currentIngredient.put("quantity", stock);
+                currentIngredient.put("threshold", threshold);
+                currentIngredient.put("price", price);
+                currentIngredient.put("unit", unit);
+                ingredients.add(currentIngredient);
+            }
+
+            stmt.close();
+            result.close();
+        }
+        catch (SQLException e) {
+             System.out.println(e);
+        }
+    }
+
+    private void populateEmployees(ArrayList<HashMap<String, Object>> employees){
+        ResultSet result = null;
+        PreparedStatement stmt = null;
+        try {
+            String sql = "select * from employees";
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
+ 
+            while (result.next()) {
+                int id = result.getInt("id");
+                String username = result.getString("username");
+                int pin = result.getInt("pin");
+                boolean manager = result.getBoolean("manager");
+                HashMap<String, Object> currentEmployee = new HashMap<>();
+                currentEmployee.put("id", id);
+                currentEmployee.put("username", username);
+                currentEmployee.put("pin", pin);
+                currentEmployee.put("manager", manager);
+                employees.add(currentEmployee);
+            }
+            
+            stmt.close();
+            result.close();
+        }
+        catch (SQLException e) {
+             System.out.println(e);
+        }
+    }
+
+    private void populateOrders(ArrayList<HashMap<String, Object>> orders){
+        ResultSet result = null;
+        PreparedStatement stmt = null;
+        try {
+            String sql = "select * from orders";
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
+ 
+            while (result.next()) {
+                int id = result.getInt("id");
+                int server = result.getInt("server");
+                double price = result.getDouble("price");
+                int type = result.getInt("type");
+                java.sql.timestamp timestamp = result.getTime("timestamp");
+                HashMap<String, Object> currentOrder = new HashMap<>();
+                currentOrder.put("id", id);
+                currentOrder.put("server", server);
+                currentOrder.put("price", price);
+                currentOrder.put("type", type);
+                currentOrder.put("timestamp", timestamp);
+                orders.add(currentOrder);
+            }
+            
+            stmt.close();
+            result.close();
+        }
+        catch (SQLException e) {
+             System.out.println(e);
+        }
+    }
+
+    /*============ END FUNCTIONS FOR BUILDING MANAGER VIEW ============*/
+    
+}
 
     // public static void main(String[] args) {
     //     DBConnection connect = new DBConnection(false);

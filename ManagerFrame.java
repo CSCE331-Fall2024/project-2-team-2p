@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import DBConnection;
+
 public class ManagerFrame {
 
     private JFrame frame;
@@ -32,10 +34,17 @@ public class ManagerFrame {
         employees = new ArrayList<>();
         orders = new ArrayList<>();
 
-        initializeMenuItems();
-        initializeIngredients();
-        initializeEmployees();
-        initializeOrders();
+        /* functions done in DBConnection instead. TODO: ensure correctness
+        initializeMenuItems(); //DONE: call populateMenuItems(menuItems) from DBConnection class
+        initializeIngredients(); //DONE: call populateIngredients(ingredients) from DBConnection class instead
+        initializeEmployees(); //DONE: call populateEmployees(employees) from DBConnection class instead
+        initializeOrders(); //DONE: call populateOrders(orders) from DBConnection class instead
+        */
+        populateMenuItems(menuItems);
+        populateIngredients(ingredients);
+        populateEmployees(employees);
+        populateOrders(orders);
+
 
         // Set up the frame
         frame = new JFrame("Panda Express POS System - Manager");
@@ -110,8 +119,9 @@ public class ManagerFrame {
     // MENU MANAGEMENT
     // ########################################################
 
+    /* function done in DBConnection instead.
     // This needs to be edited to fetch stuff from the backend
-    private void initializeMenuItems() {
+    private void initializeMenuItems() { //DONE: call populateMenuItems(menuItems) from DBConnection class
         HashMap<String, Object> orangeChicken = new HashMap<>();
         orangeChicken.put("Name", "Orange Chicken");
         orangeChicken.put("Additional Cost", 0.0);
@@ -124,6 +134,7 @@ public class ManagerFrame {
         beefBroccoli.put("Entree", true);
         menuItems.add(beefBroccoli);
     }
+    */
 
     private void populateTableModel() {
         tableModel.setRowCount(0); // Clear existing rows
@@ -262,7 +273,8 @@ public class ManagerFrame {
     // Ingredient Management
     // ########################################################
 
-    private void initializeIngredients() {
+    /* function done in DBConnection instead.
+    private void initializeIngredients() { //DONE: call populateIngredients(ingredients) from DBConnection class instead
         HashMap<String, Object> stringBeans = new HashMap<>();
         stringBeans.put("Name", "String Beans");
         stringBeans.put("threshold", 2800000);
@@ -287,7 +299,7 @@ public class ManagerFrame {
         broccoli.put("quantity", 30000);
         ingredients.add(broccoli);
     }
-    
+    */
 
     private void  populateIngredientTableModel() {
         tableModel.setRowCount(0);
@@ -444,7 +456,8 @@ public class ManagerFrame {
     // EMPLOYEE MANAGEMENT
     // ########################################################
 
-    private void initializeEmployees() {
+    /* function done in DBConnection instead.
+    private void initializeEmployees() { //DONE: call populateEmployees(employees) from DBConnection class instead
         HashMap<String, Object> zophous = new HashMap<>();
         zophous.put("id", 1);
         zophous.put("username", "Zophous");
@@ -473,6 +486,7 @@ public class ManagerFrame {
         smiles.put("manager", false);
         employees.add(smiles);
     }    
+    */
 
     private void populateEmployeeTableModel() {
         tableModel.setRowCount(0);
@@ -606,7 +620,9 @@ public class ManagerFrame {
     // ########################################################
     // ORDER DISPLAY
     // ########################################################
-    private void initializeOrders() {
+
+    /* function done in DBConnection instead.
+    private void initializeOrders() { //DONE: call populateOrders(orders) from DBConnection class instead
         HashMap<String, Object> order1 = new HashMap<>();
         order1.put("id", 1);
         order1.put("server", "Zophous");
@@ -631,6 +647,7 @@ public class ManagerFrame {
         order3.put("timestamp", "2024-10-10 12:40:00");
         orders.add(order3);
     }
+    */
 
     private void displayOrders(JPanel orderPanel) {
         orderPanel.removeAll();
