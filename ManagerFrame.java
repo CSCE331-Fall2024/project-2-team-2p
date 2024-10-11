@@ -155,8 +155,8 @@ public class ManagerFrame {
         for (HashMap<String, Object> menuItem : menuItems) {
             String name = (String) menuItem.get("Name");
             Double additionalCost = (Double) menuItem.get("Additional Cost");
-            Boolean isEntree = (Boolean) menuItem.get("Entree");
-            tableModel.addRow(new Object[]{name, additionalCost, isEntree ? "Yes" : "No"});
+            Integer isEntree = (Integer) menuItem.get("Entree");
+            tableModel.addRow(new Object[]{name, additionalCost, (isEntree == 1) ? "Yes" : "No"});
         }
     }
 
@@ -672,7 +672,7 @@ public class ManagerFrame {
         orderPanel.add(new JLabel("Orders"));
     
         for (HashMap<String, Object> order : orders) {
-            String type = (String) order.get("type");
+            String type = order.get("type").toString();
             Double price = (Double) order.get("price");
             orderPanel.add(new JLabel(type + ": $" + price));
         }
