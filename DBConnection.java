@@ -142,6 +142,36 @@ public class DBConnection {
         update_ingredients_table(menuitemskeys);
     }
 
+    public ArrayList<HashMap<String, Object>> executeQuery(String query, ArrayList<HashMap<String, Object>> array) {
+        Statement stmt = null;
+        ArrayList<HashMap<String, Object>> resultList = new ArrayList<>();
+
+        try {
+            stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+
+            ResultSetMetaData metaData = result.getMetaData();
+            int columnCount = metaData.getColumnCount();
+
+            while (result.next()) {
+                HashMap<String, Object> row = new HashMap<>();
+                
+                // For each column in the row, add it to the HashMap
+                for (int i = 1; i <= columnCount; i++) {
+                    String columnName = metaData.getColumnName(i);
+                    Object value = result.getObject(i);
+                    row.put(columnName, value);
+                }
+                resultList.add(row);
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return resultList;
+    }
+
     /**
      * Closes db connection
      */
