@@ -60,27 +60,32 @@ public class CashierEditorUI extends javax.swing.JFrame {
                     entre = 3;
                 }
                 Entrees.add(name);
-
-                addEntree(name, price); // Call to add the entree and update the display
                 System.out.println("Selected item: " + name);
 
 
                 if(Entrees.size() == entre){
                     jTabbedPane1.setSelectedIndex(2);
                 }
-                jPanel1.revalidate();
-                jPanel1.repaint();
-
-                System.out.println("Selected item: " + name);
+                System.out.println(Entrees.size() + " " + entre);
             });
         
             // Add the button to jPanel3
             jPanel3.add(menuItemButton);
         }
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(evt -> {
+            Entrees.clear();
+            type = -1;
+            jTabbedPane1.setSelectedIndex(0); // Assuming the first tab is the previous screen
+        });
         
+        // Add the back button to the last row in jPanel3
+        jPanel3.add(backButton);
+
         // Revalidate and repaint to update the panel with new components
         jPanel3.revalidate();
         jPanel3.repaint();
+        
     }
 
    /**
