@@ -448,7 +448,7 @@ public class DBConnection {
             stmt.executeUpdate();
     
             // Insert new ingredients
-            String insertIngredientSQL = "INSERT INTO Ingredients (id, name, stock, threshold, price, unit) VALUES (?, ?, ?, ?, ?, ?)";
+            String insertIngredientSQL = "INSERT INTO ingredients (id, name, stock, threshold, price, unit) VALUES (?, ?, ?, ?, ?, ?)";
             stmt = conn.prepareStatement(insertIngredientSQL);
     
             for (HashMap<String, Object> ingredient : ingredients) {
@@ -473,7 +473,7 @@ public class DBConnection {
         ResultSet result = null;
         PreparedStatement stmt = null;
         try {
-            String sql = "select * from employees";
+            String sql = "SELECT * FROM employees";
             stmt = conn.prepareStatement(sql);
             result = stmt.executeQuery();
  
@@ -509,7 +509,7 @@ public class DBConnection {
             stmt.executeUpdate();
     
             // Insert new employees
-            String insertEmployeeSQL = "INSERT INTO Employees (id, username, pin, manager) VALUES (?, ?, ?, ?)";
+            String insertEmployeeSQL = "INSERT INTO employees (id, username, pin, manager) VALUES (?, ?, ?, ?)";
             stmt = conn.prepareStatement(insertEmployeeSQL);
     
             for (HashMap<String, Object> employee : employees) {
