@@ -41,12 +41,11 @@ public class DBConnection {
             
             if (result.next()) {
                 boolean isManager = result.getBoolean("manager");
-                if (isManager == manager) {
-                    employee = user;
-                    result.close();
-                    stmt.close();
-                    return true;
-                }
+                manager = (isManager) ? true : false;
+                employee = user;
+                result.close();
+                stmt.close();
+                return true;
             }
         }
         catch (SQLException e) {
