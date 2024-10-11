@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.sql.*;
 
 public class Order {
@@ -6,14 +7,14 @@ public class Order {
     public int server;
     public double price;
     public int type;
-    public Date timestamp;
+    public Timestamp timestamp;
 
     public Order(int id, int server, double price, int type) {
         this.id = id;
         this.server = server;
         this.price = price;
         this.type = type;
-        LocalDate time = LocalDate.now();
-        timestamp = Date.valueOf(time);
+        LocalDateTime time = LocalDateTime.now();
+        timestamp = Timestamp.valueOf(time);
     }
 }
