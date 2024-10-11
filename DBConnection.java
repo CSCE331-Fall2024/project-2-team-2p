@@ -415,14 +415,16 @@ public class DBConnection {
             result = stmt.executeQuery();
  
             while (result.next()) {
+                int id = result.getInt("id");
                 String name = result.getString("name");
                 int stock = result.getInt("stock");
                 int threshold = result.getInt("threshold");
                 double price = result.getDouble("price");
                 String unit = result.getString("unit");
                 HashMap<String, Object> currentIngredient = new HashMap<>();
-                currentIngredient.put("Name", name);
-                currentIngredient.put("quantity", stock);
+                currentIngredient.put("id", id);
+                currentIngredient.put("name", name);
+                currentIngredient.put("stock", stock);
                 currentIngredient.put("threshold", threshold);
                 currentIngredient.put("price", price);
                 currentIngredient.put("unit", unit);
@@ -442,13 +444,10 @@ public class DBConnection {
         PreparedStatement stmt = null;
     
         try {
-            // Delete existing entries in Ingredients
-            String deleteIngredientsSQL = "DELETE FROM Ingredients";
-            stmt = conn.prepareStatement(deleteIngredientsSQL);
-            stmt.executeUpdate();
-    
             // Insert new ingredients
-            String insertIngredientSQL = "INSERT INTO ingredients (id, name, stock, threshold, price, unit) VALUES (?, ?, ?, ?, ?, ?)";
+            String insertIngredientSQL = "INSERT INTO ingredients (id, name, stock, threshold, price, unit) VALUES (?, ?, ?, ?, ?, ?) " +
+            "ON CONFLICT (id) " +
+            "DO UPDATE SET name = EXCLUDED.name, stock = EXCLUDED.stock, threshold = EXCLUDED.threshold, price = EXCLUDED.price, unit = EXCLUDED.unit";
             stmt = conn.prepareStatement(insertIngredientSQL);
     
             for (HashMap<String, Object> ingredient : ingredients) {
@@ -503,13 +502,10 @@ public class DBConnection {
         PreparedStatement stmt = null;
     
         try {
-            // Delete existing entries in Employees
-            String deleteEmployeesSQL = "DELETE FROM Employees";
-            stmt = conn.prepareStatement(deleteEmployeesSQL);
-            stmt.executeUpdate();
-    
             // Insert new employees
-            String insertEmployeeSQL = "INSERT INTO employees (id, username, pin, manager) VALUES (?, ?, ?, ?)";
+            String insertEmployeeSQL = "INSERT INTO employees (id, username, pin, manager) VALUES (?, ?, ?, ?) " +
+            "ON CONFLICT (id) " +
+            "DO UPDATE SET username = EXCLUDED.username, pin = EXCLUDED.pin, manager = EXCLUDED.manager";
             stmt = conn.prepareStatement(insertEmployeeSQL);
     
             for (HashMap<String, Object> employee : employees) {
@@ -531,7 +527,7 @@ public class DBConnection {
         ResultSet result = null;
         PreparedStatement stmt = null;
         try {
-            String sql = "select * from orders";
+            String sql = "select * from orders LIMIT 30";
             stmt = conn.prepareStatement(sql);
             result = stmt.executeQuery();
  
