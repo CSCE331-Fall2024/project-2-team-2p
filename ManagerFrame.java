@@ -22,6 +22,7 @@ public class ManagerFrame {
     private ArrayList<HashMap<String, Object>> ingredients;
     private ArrayList<HashMap<String, Object>> employees;
     private ArrayList<HashMap<String, Object>> orders;
+    private HashMap<Integer, ArrayList<Integer>> ingredientsmenuitems = new HashMap<>();
     private ArrayList<HashMap<String, Object>> viewOrders;
 
     // data structures for removed entries
@@ -143,7 +144,7 @@ public class ManagerFrame {
     private void showAddMenuItemForm() {
         JTextField nameField = new JTextField(10);
         JTextField costField = new JTextField(5);
-        JCheckBox entreeCheckBox = new JCheckBox("Entree");
+        JCheckBox entreeCheckBox = new JCheckBox("Entree?");
 
         JPanel panel = new JPanel();
         panel.add(new JLabel("Name:"));
@@ -154,17 +155,39 @@ public class ManagerFrame {
         panel.add(Box.createHorizontalStrut(15)); // Spacer
         panel.add(entreeCheckBox);
 
+        JPanel ingredientsPanel = new JPanel();
+        ingredientsPanel.setLayout(new GridLayout(0, 3));  
+        panel.add(new JLabel("Select Ingredients:"));
+        HashMap<Integer, JCheckBox> checkboxes = new HashMap<>();
+        for (HashMap<String, Object> ingredient : ingredients) {
+            JCheckBox checkBox = new JCheckBox((String) ingredient.get("name"));
+            checkboxes.put((Integer) ingredient.get("id"), checkBox);
+            ingredientsPanel.add(checkBox);
+        }
+        panel.add(ingredientsPanel);
+
         int result = JOptionPane.showConfirmDialog(frame, panel, "Add New Menu Item", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             String name = nameField.getText();
             Double additionalCost = Double.parseDouble(costField.getText());
-            Boolean isEntree = entreeCheckBox.isSelected();
+            Integer isEntree = entreeCheckBox.isSelected() ? 1 : 0;
 
             HashMap<String, Object> newItem = new HashMap<>();
+            newItem.put("id", menuItems.size()+1);
             newItem.put("Name", name);
             newItem.put("Additional Cost", additionalCost);
             newItem.put("Entree", isEntree);
             menuItems.add(newItem);
+
+            Integer maxID = connect.getMaxID("menuitems") + 1;
+
+            ArrayList<Integer> newIngredients = new ArrayList<>();
+            for (HashMap.Entry<Integer, JCheckBox> entry : checkboxes.entrySet()) {
+                if (entry.getValue().isSelected()) {
+                    newIngredients.add(entry.getKey());
+                }
+            }
+            ingredientsmenuitems.put(maxID, newIngredients);
 
             populateTableModel();
         }
@@ -176,7 +199,7 @@ public class ManagerFrame {
 
         JTextField nameField = new JTextField((String) menuItem.get("Name"), 10);
         JTextField costField = new JTextField(menuItem.get("Additional Cost").toString(), 5);
-        JCheckBox entreeCheckBox = new JCheckBox("Entree", (Boolean) menuItem.get("Entree"));
+        JCheckBox entreeCheckBox = new JCheckBox("Entree", (Boolean) ((Integer) menuItem.get("Entree") == 1) ? true : false );
 
         JPanel panel = new JPanel();
         panel.add(new JLabel("Name:"));
@@ -191,7 +214,7 @@ public class ManagerFrame {
         if (result == JOptionPane.OK_OPTION) {
             String name = nameField.getText();
             Double additionalCost = Double.parseDouble(costField.getText());
-            Boolean isEntree = entreeCheckBox.isSelected();
+            Integer isEntree = entreeCheckBox.isSelected() ? 1 : 0;
 
             menuItem.put("Name", name);
             menuItem.put("Additional Cost", additionalCost);
@@ -236,7 +259,7 @@ public class ManagerFrame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                connect.sendMenuToBackend(menuItems); 
+                connect.sendMenuToBackend(menuItems, ingredientsmenuitems); 
             }
         });
     
