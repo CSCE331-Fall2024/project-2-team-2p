@@ -1,6 +1,7 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class DBConnection {
     private Connection conn = null;
@@ -312,7 +313,7 @@ public class DBConnection {
 
     /*============ FUNCTIONS FOR BUILDING MANAGER VIEW ============*/
 
-    private void populateMenuItems(ArrayList<HashMap<String, Object>> menuItems){
+    public void populateMenuItems(ArrayList<HashMap<String, Object>> menuItems){
         ResultSet result = null;
         PreparedStatement stmt = null;
         try {
@@ -339,15 +340,73 @@ public class DBConnection {
         }
     }
 
-    private void sendMenuToBackend(ArrayList<HashMap<String, Object>> menuItems){
+    public void sendMenuToBackend(ArrayList<HashMap<String, Object>> menuItems){
         System.out.println("Sending menu to backend...");
-        for (HashMap<String, Object> menuItem : menuItems) {
-            System.out.println(menuItem);
-        }
+        PreparedStatement stmt = null;
+        try {
+            // Delete existing entries in MenuItems and IngredientsMenuItems tables
+            String deleteMenuItemsSQL = "DELETE FROM MenuItems";
+            stmt = conn.prepareStatement(deleteMenuItemsSQL);
+            stmt.executeUpdate();
+            
+            String deleteIngredientsMenuItemsSQL = "DELETE FROM IngredientsMenuItems";
+            stmt = conn.prepareStatement(deleteIngredientsMenuItemsSQL);
+            stmt.executeUpdate();
+            
+            // Insert new menu items
+            String insertMenuItemSQL = "INSERT INTO MenuItems (id, name, price, entree) VALUES (?, ?, ?, ?)";
+            stmt = conn.prepareStatement(insertMenuItemSQL);
+            
+            for (HashMap<String, Object> menuItem : menuItems) {
+                stmt.setInt(1, (Integer) menuItem.get("id"));
+                stmt.setString(2, (String) menuItem.get("name"));
+                stmt.setFloat(3, (Float) menuItem.get("price"));
+                stmt.setInt(4, (Integer) menuItem.get("entree"));
+                stmt.executeUpdate();
+            }
         
+            // Update IngredientsMenuItems table
+            String insertIngredientMenuItemSQL = "INSERT INTO IngredientsMenuItems (IngredientKey, MenuItemKey, quantity) VALUES (?, ?, ?)";
+            stmt = conn.prepareStatement(insertIngredientMenuItemSQL);
+        
+            for (HashMap<String, Object> menuItem : menuItems) {
+                List<HashMap<String, Object>> ingredients = (List<HashMap<String, Object>>) menuItem.get("ingredients");
+                int menuItemId = (Integer) menuItem.get("id");
+            
+                for (HashMap<String, Object> ingredient : ingredients) {
+                    stmt.setInt(1, (Integer) ingredient.get("IngredientKey"));
+                    stmt.setInt(2, menuItemId);
+                    stmt.setInt(3, (Integer) ingredient.get("quantity"));
+                    stmt.executeUpdate();
+                }
+            }
+        
+            // Update MenuItemsOrders table
+            String deleteMenuItemsOrdersSQL = "DELETE FROM MenuItemsOrders";
+            stmt = conn.prepareStatement(deleteMenuItemsOrdersSQL);
+            stmt.executeUpdate();
+        
+            String insertMenuItemOrderSQL = "INSERT INTO MenuItemsOrders (MenuItemKey, OrderKey) VALUES (?, ?)";
+            stmt = conn.prepareStatement(insertMenuItemOrderSQL);
+        
+            for (HashMap<String, Object> menuItem : menuItems) {
+                int menuItemId = (Integer) menuItem.get("id");
+                List<Integer> orders = (List<Integer>) menuItem.get("orders");
+            
+                for (int orderId : orders) {
+                    stmt.setInt(1, menuItemId);
+                    stmt.setInt(2, orderId);
+                    stmt.executeUpdate();
+                }
+            }
+            stmt.close();
+            System.out.println("MenuItems sent to backend successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void populateIngredients(ArrayList<HashMap<String, Object>> ingredients){
+    public void populateIngredients(ArrayList<HashMap<String, Object>> ingredients){
         ResultSet result = null;
         PreparedStatement stmt = null;
         try {
@@ -378,7 +437,39 @@ public class DBConnection {
         }
     }
 
-    private void populateEmployees(ArrayList<HashMap<String, Object>> employees){
+    public void sendIngredientsToBackend(ArrayList<HashMap<String, Object>> ingredients) {
+        System.out.println("Sending ingredients to backend...");
+        PreparedStatement stmt = null;
+    
+        try {
+            // Delete existing entries in Ingredients
+            String deleteIngredientsSQL = "DELETE FROM Ingredients";
+            stmt = conn.prepareStatement(deleteIngredientsSQL);
+            stmt.executeUpdate();
+    
+            // Insert new ingredients
+            String insertIngredientSQL = "INSERT INTO Ingredients (id, name, stock, threshold, price, unit) VALUES (?, ?, ?, ?, ?, ?)";
+            stmt = conn.prepareStatement(insertIngredientSQL);
+    
+            for (HashMap<String, Object> ingredient : ingredients) {
+                stmt.setInt(1, (Integer) ingredient.get("id"));
+                stmt.setString(2, (String) ingredient.get("name"));
+                stmt.setInt(3, (Integer) ingredient.get("stock"));
+                stmt.setInt(4, (Integer) ingredient.get("threshold"));
+                stmt.setDouble(5, (Double) ingredient.get("price"));
+                stmt.setString(6, (String) ingredient.get("unit"));
+                stmt.executeUpdate();
+            }
+
+            stmt.close();
+            System.out.println("Ingredients sent to backend successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+    public void populateEmployees(ArrayList<HashMap<String, Object>> employees){
         ResultSet result = null;
         PreparedStatement stmt = null;
         try {
@@ -407,7 +498,36 @@ public class DBConnection {
         }
     }
 
-    private void populateOrders(ArrayList<HashMap<String, Object>> orders){
+    public void sendEmployeesToBackend(ArrayList<HashMap<String, Object>> employees) {
+        System.out.println("Sending employees to backend...");
+        PreparedStatement stmt = null;
+    
+        try {
+            // Delete existing entries in Employees
+            String deleteEmployeesSQL = "DELETE FROM Employees";
+            stmt = conn.prepareStatement(deleteEmployeesSQL);
+            stmt.executeUpdate();
+    
+            // Insert new employees
+            String insertEmployeeSQL = "INSERT INTO Employees (id, username, pin, manager) VALUES (?, ?, ?, ?)";
+            stmt = conn.prepareStatement(insertEmployeeSQL);
+    
+            for (HashMap<String, Object> employee : employees) {
+                stmt.setInt(1, (Integer) employee.get("id"));
+                stmt.setString(2, (String) employee.get("username"));
+                stmt.setInt(3, (Integer) employee.get("pin"));
+                stmt.setBoolean(4, (Boolean) employee.get("manager"));
+                stmt.executeUpdate();
+            }
+
+            stmt.close();
+            System.out.println("Employees sent to backend successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void populateOrders(ArrayList<HashMap<String, Object>> orders){
         ResultSet result = null;
         PreparedStatement stmt = null;
         try {
@@ -420,7 +540,7 @@ public class DBConnection {
                 int server = result.getInt("server");
                 double price = result.getDouble("price");
                 int type = result.getInt("type");
-                java.sql.timestamp timestamp = result.getTime("timestamp");
+                Timestamp timestamp = result.getTimestamp("timestamp");
                 HashMap<String, Object> currentOrder = new HashMap<>();
                 currentOrder.put("id", id);
                 currentOrder.put("server", server);
@@ -455,4 +575,4 @@ public class DBConnection {
     //     connect.placeOrder(order, entrees, sides);
     //     connect.close();
     // }
-}
+

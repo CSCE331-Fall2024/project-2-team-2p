@@ -7,8 +7,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import DBConnection;
-
 public class ManagerFrame {
 
     private JFrame frame;
@@ -24,8 +22,20 @@ public class ManagerFrame {
     private ArrayList<HashMap<String, Object>> ingredients;
     private ArrayList<HashMap<String, Object>> employees;
     private ArrayList<HashMap<String, Object>> orders;
+    private ArrayList<HashMap<String, Object>> viewOrders;
+
+    // data structures for removed entries
+    private ArrayList<HashMap<String, Object>> removedMenuItems; 
+    private ArrayList<HashMap<String, Object>> removedIngredients;
+    private ArrayList<HashMap<String, Object>> removedEmployees;
 
     private DefaultTableModel tableModel;
+
+    private DBConnection connect;
+
+    //TODO: make sure user is found
+    private String  placeholdUsername = "Zophous";
+    private int placeholdPin = 1111;
 
     public ManagerFrame() {
         // initializing data structures for the popups
@@ -35,8 +45,8 @@ public class ManagerFrame {
         orders = new ArrayList<>();
 
         //connect to database
-        DBConnection connect = new DBConnection(true); //true for manager view
-        connect.verifyCredentials();
+        connect = new DBConnection(true); //true for manager view
+        connect.verifyCredentials(placeholdUsername, placeholdPin);
 
         /* functions done in DBConnection instead. TODO: ensure correctness
         initializeMenuItems(); //DONE: call populateMenuItems(menuItems) from DBConnection class
@@ -212,6 +222,7 @@ public class ManagerFrame {
         }
     }
 
+    /*DONE: call sendMenuToBackend() in DBConnection
     // This also needs to send the entire menu to the backend 
     // For the demo, just avoid the ingredients
     private void sendMenuToBackend() {
@@ -219,7 +230,7 @@ public class ManagerFrame {
         for (HashMap<String, Object> menuItem : menuItems) {
             System.out.println(menuItem);
         }
-    }
+    }*/
 
     private void showMenuManagement() {
         String[] columnNames = {"Name", "Additional Cost", "Entree"};
@@ -256,7 +267,7 @@ public class ManagerFrame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sendMenuToBackend(); 
+                connect.sendMenuToBackend(menuItems); 
             }
         });
     
@@ -395,13 +406,14 @@ public class ManagerFrame {
         }
     }    
 
+    /*DONE: call sendMenuToBackend() in DBConnection
     // Again, will probably just send this to backend and just update the whole table
     private void sendIngredientsToBackend() {
         System.out.println("Sending ingredients to backend...");
         for (HashMap<String, Object> ingredient : ingredients) {
             System.out.println(ingredient);
         }
-    }
+    }*/
 
     private void showIngredientManagement() {
         String[] columnNames = {"Name", "Threshold", "Price", "Unit", "Quantity"};
@@ -439,7 +451,7 @@ public class ManagerFrame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sendIngredientsToBackend();
+                connect.sendIngredientsToBackend(ingredients);
             }
         });
     
@@ -562,12 +574,13 @@ public class ManagerFrame {
         }
     }
 
+    /*DONE: call sendMenuToBackend() in DBConnection
     private void sendEmployeesToBackend() {
         System.out.println("Sending employees to backend...");
         for (HashMap<String, Object> employee : employees) {
             System.out.println(employee);
         }
-    }
+    }*/
     
     private void showEmployeeManagement() {
         String[] columnNames = {"ID", "Username", "PIN", "Manager"};
@@ -604,7 +617,7 @@ public class ManagerFrame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                sendEmployeesToBackend();
+                connect.sendEmployeesToBackend(employees);
             }
         });
     
