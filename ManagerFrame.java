@@ -22,6 +22,7 @@ public class ManagerFrame {
     private ArrayList<HashMap<String, Object>> ingredients;
     private ArrayList<HashMap<String, Object>> employees;
     private ArrayList<HashMap<String, Object>> orders;
+    private HashMap<Integer, ArrayList<Integer>> ingredientsmenuitems = new HashMap<>();
     private ArrayList<HashMap<String, Object>> viewOrders;
 
     // data structures for removed entries
@@ -49,10 +50,6 @@ public class ManagerFrame {
         connect.verifyCredentials(placeholdUsername, placeholdPin);
 
         /* functions done in DBConnection instead. TODO: ensure correctness
-        initializeMenuItems(); //DONE: call populateMenuItems(menuItems) from DBConnection class
-        initializeIngredients(); //DONE: call populateIngredients(ingredients) from DBConnection class instead
-        initializeEmployees(); //DONE: call populateEmployees(employees) from DBConnection class instead
-        initializeOrders(); //DONE: call populateOrders(orders) from DBConnection class instead
         */
         connect.populateMenuItems(menuItems);
         connect.populateIngredients(ingredients);
@@ -133,23 +130,6 @@ public class ManagerFrame {
     // MENU MANAGEMENT
     // ########################################################
 
-    /* function done in DBConnection instead.
-    // This needs to be edited to fetch stuff from the backend
-    private void initializeMenuItems() { //DONE: call populateMenuItems(menuItems) from DBConnection class
-        HashMap<String, Object> orangeChicken = new HashMap<>();
-        orangeChicken.put("Name", "Orange Chicken");
-        orangeChicken.put("Additional Cost", 0.0);
-        orangeChicken.put("Entree", true);
-        menuItems.add(orangeChicken);
-
-        HashMap<String, Object> beefBroccoli = new HashMap<>();
-        beefBroccoli.put("Name", "Beef with Broccoli");
-        beefBroccoli.put("Additional Cost", 1.5);
-        beefBroccoli.put("Entree", true);
-        menuItems.add(beefBroccoli);
-    }
-    */
-
     private void populateTableModel() {
         tableModel.setRowCount(0); // Clear existing rows
         for (HashMap<String, Object> menuItem : menuItems) {
@@ -164,7 +144,7 @@ public class ManagerFrame {
     private void showAddMenuItemForm() {
         JTextField nameField = new JTextField(10);
         JTextField costField = new JTextField(5);
-        JCheckBox entreeCheckBox = new JCheckBox("Entree");
+        JCheckBox entreeCheckBox = new JCheckBox("Entree?");
 
         JPanel panel = new JPanel();
         panel.add(new JLabel("Name:"));
@@ -175,17 +155,39 @@ public class ManagerFrame {
         panel.add(Box.createHorizontalStrut(15)); // Spacer
         panel.add(entreeCheckBox);
 
+        JPanel ingredientsPanel = new JPanel();
+        ingredientsPanel.setLayout(new GridLayout(0, 3));  
+        panel.add(new JLabel("Select Ingredients:"));
+        HashMap<Integer, JCheckBox> checkboxes = new HashMap<>();
+        for (HashMap<String, Object> ingredient : ingredients) {
+            JCheckBox checkBox = new JCheckBox((String) ingredient.get("name"));
+            checkboxes.put((Integer) ingredient.get("id"), checkBox);
+            ingredientsPanel.add(checkBox);
+        }
+        panel.add(ingredientsPanel);
+
         int result = JOptionPane.showConfirmDialog(frame, panel, "Add New Menu Item", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             String name = nameField.getText();
             Double additionalCost = Double.parseDouble(costField.getText());
-            Boolean isEntree = entreeCheckBox.isSelected();
+            Integer isEntree = entreeCheckBox.isSelected() ? 1 : 0;
 
             HashMap<String, Object> newItem = new HashMap<>();
+            newItem.put("id", menuItems.size()+1);
             newItem.put("Name", name);
             newItem.put("Additional Cost", additionalCost);
             newItem.put("Entree", isEntree);
             menuItems.add(newItem);
+
+            Integer maxID = connect.getMaxID("menuitems") + 1;
+
+            ArrayList<Integer> newIngredients = new ArrayList<>();
+            for (HashMap.Entry<Integer, JCheckBox> entry : checkboxes.entrySet()) {
+                if (entry.getValue().isSelected()) {
+                    newIngredients.add(entry.getKey());
+                }
+            }
+            ingredientsmenuitems.put(maxID, newIngredients);
 
             populateTableModel();
         }
@@ -197,7 +199,7 @@ public class ManagerFrame {
 
         JTextField nameField = new JTextField((String) menuItem.get("Name"), 10);
         JTextField costField = new JTextField(menuItem.get("Additional Cost").toString(), 5);
-        JCheckBox entreeCheckBox = new JCheckBox("Entree", (Boolean) menuItem.get("Entree"));
+        JCheckBox entreeCheckBox = new JCheckBox("Entree", (Boolean) ((Integer) menuItem.get("Entree") == 1) ? true : false );
 
         JPanel panel = new JPanel();
         panel.add(new JLabel("Name:"));
@@ -212,7 +214,7 @@ public class ManagerFrame {
         if (result == JOptionPane.OK_OPTION) {
             String name = nameField.getText();
             Double additionalCost = Double.parseDouble(costField.getText());
-            Boolean isEntree = entreeCheckBox.isSelected();
+            Integer isEntree = entreeCheckBox.isSelected() ? 1 : 0;
 
             menuItem.put("Name", name);
             menuItem.put("Additional Cost", additionalCost);
@@ -221,16 +223,6 @@ public class ManagerFrame {
             populateTableModel();
         }
     }
-
-    /*DONE: call sendMenuToBackend() in DBConnection
-    // This also needs to send the entire menu to the backend 
-    // For the demo, just avoid the ingredients
-    private void sendMenuToBackend() {
-        System.out.println("Sending menu to backend...");
-        for (HashMap<String, Object> menuItem : menuItems) {
-            System.out.println(menuItem);
-        }
-    }*/
 
     private void showMenuManagement() {
         String[] columnNames = {"Name", "Additional Cost", "Entree"};
@@ -267,7 +259,7 @@ public class ManagerFrame {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                connect.sendMenuToBackend(menuItems); 
+                connect.sendMenuToBackend(menuItems, ingredientsmenuitems); 
             }
         });
     
@@ -288,42 +280,14 @@ public class ManagerFrame {
     // Ingredient Management
     // ########################################################
 
-    /* function done in DBConnection instead.
-    private void initializeIngredients() { //DONE: call populateIngredients(ingredients) from DBConnection class instead
-        HashMap<String, Object> stringBeans = new HashMap<>();
-        stringBeans.put("Name", "String Beans");
-        stringBeans.put("threshold", 2800000);
-        stringBeans.put("price", 0.02);
-        stringBeans.put("unit", "g");
-        stringBeans.put("quantity", 50000);
-        ingredients.add(stringBeans);
-    
-        HashMap<String, Object> chicken = new HashMap<>();
-        chicken.put("Name", "Chicken");
-        chicken.put("threshold", 1500000);
-        chicken.put("price", 0.05);
-        chicken.put("unit", "g");
-        chicken.put("quantity", 20000);
-        ingredients.add(chicken);
-    
-        HashMap<String, Object> broccoli = new HashMap<>();
-        broccoli.put("Name", "Broccoli");
-        broccoli.put("threshold", 1000000);
-        broccoli.put("price", 0.03);
-        broccoli.put("unit", "g");
-        broccoli.put("quantity", 30000);
-        ingredients.add(broccoli);
-    }
-    */
-
     private void  populateIngredientTableModel() {
         tableModel.setRowCount(0);
         for (HashMap<String, Object> ingredient : ingredients) {
-            String name = (String) ingredient.get("Name");
+            String name = (String) ingredient.get("name");
             Integer threshold = (Integer) ingredient.get("threshold");
             Double price = (Double) ingredient.get("price");
             String unit = (String) ingredient.get("unit");
-            Integer quantity = (Integer) ingredient.get("quantity");
+            Integer quantity = (Integer) ingredient.get("stock");
             tableModel.addRow(new Object[]{name, threshold, price, unit, quantity});
         }
     }
@@ -355,12 +319,15 @@ public class ManagerFrame {
             String unit = unitField.getText();
             Integer quantity = Integer.parseInt(quantityField.getText());
 
+            int id = ingredients.size() + 1;
+
             HashMap<String, Object> newIngredient = new HashMap<>();
-            newIngredient.put("Name", name);
+            newIngredient.put("id", id);
+            newIngredient.put("name", name);
             newIngredient.put("threshold", threshold);
             newIngredient.put("price", price);
             newIngredient.put("unit", unit);
-            newIngredient.put("quantity", quantity);
+            newIngredient.put("stock", quantity);
             ingredients.add(newIngredient);
     
             populateIngredientTableModel();
@@ -370,11 +337,11 @@ public class ManagerFrame {
     private void showEditIngredientForm(int rowIndex) {
         HashMap<String, Object> ingredient = ingredients.get(rowIndex);
     
-        JTextField nameField = new JTextField((String) ingredient.get("Name"), 10);
+        JTextField nameField = new JTextField((String) ingredient.get("name"), 10);
         JTextField thresholdField = new JTextField(ingredient.get("threshold").toString(), 10);
         JTextField priceField = new JTextField(ingredient.get("price").toString(), 5);
         JTextField unitField = new JTextField((String) ingredient.get("unit"), 5);
-        JTextField quantityField = new JTextField(ingredient.get("quantity").toString(), 5);
+        JTextField quantityField = new JTextField(ingredient.get("stock").toString(), 5);
     
         JPanel panel = new JPanel(new GridLayout(5, 2));
         panel.add(new JLabel("Name:"));
@@ -395,25 +362,17 @@ public class ManagerFrame {
             Double price = Double.parseDouble(priceField.getText());
             String unit = unitField.getText();
             Integer quantity = Integer.parseInt(quantityField.getText());
-    
-            ingredient.put("Name", name);
+            
+            ingredient.put("id", ingredients.size() + 1);
+            ingredient.put("name", name);
             ingredient.put("threshold", threshold);
             ingredient.put("price", price);
             ingredient.put("unit", unit);
-            ingredient.put("quantity", quantity);
+            ingredient.put("stock", quantity);
     
             populateIngredientTableModel();
         }
     }    
-
-    /*DONE: call sendMenuToBackend() in DBConnection
-    // Again, will probably just send this to backend and just update the whole table
-    private void sendIngredientsToBackend() {
-        System.out.println("Sending ingredients to backend...");
-        for (HashMap<String, Object> ingredient : ingredients) {
-            System.out.println(ingredient);
-        }
-    }*/
 
     private void showIngredientManagement() {
         String[] columnNames = {"Name", "Threshold", "Price", "Unit", "Quantity"};
@@ -471,38 +430,6 @@ public class ManagerFrame {
     // ########################################################
     // EMPLOYEE MANAGEMENT
     // ########################################################
-
-    /* function done in DBConnection instead.
-    private void initializeEmployees() { //DONE: call populateEmployees(employees) from DBConnection class instead
-        HashMap<String, Object> zophous = new HashMap<>();
-        zophous.put("id", 1);
-        zophous.put("username", "Zophous");
-        zophous.put("pin", 1111);
-        zophous.put("manager", true);
-        employees.add(zophous);
-    
-        HashMap<String, Object> fishy = new HashMap<>();
-        fishy.put("id", 2);
-        fishy.put("username", "Fishy");
-        fishy.put("pin", 3474);
-        fishy.put("manager", false);
-        employees.add(fishy);
-    
-        HashMap<String, Object> timtak = new HashMap<>();
-        timtak.put("id", 3);
-        timtak.put("username", "Timtak");
-        timtak.put("pin", 2222);
-        timtak.put("manager", false);
-        employees.add(timtak);
-    
-        HashMap<String, Object> smiles = new HashMap<>();
-        smiles.put("id", 4);
-        smiles.put("username", "Smiles");
-        smiles.put("pin", 3333);
-        smiles.put("manager", false);
-        employees.add(smiles);
-    }    
-    */
 
     private void populateEmployeeTableModel() {
         tableModel.setRowCount(0);
@@ -574,6 +501,16 @@ public class ManagerFrame {
         }
     }
 
+
+    /*DONE: call sendMenuToBackend() in DBConnection
+    private void sendEmployeesToBackend() {
+        System.out.println("Sending employees to backend...");
+        for (HashMap<String, Object> employee : employees) {
+            System.out.println(employee);
+        }
+    }*/
+    
+    
     /*DONE: call sendMenuToBackend() in DBConnection
     private void sendEmployeesToBackend() {
         System.out.println("Sending employees to backend...");
@@ -637,34 +574,6 @@ public class ManagerFrame {
     // ########################################################
     // ORDER DISPLAY
     // ########################################################
-
-    /* function done in DBConnection instead.
-    private void initializeOrders() { //DONE: call populateOrders(orders) from DBConnection class instead
-        HashMap<String, Object> order1 = new HashMap<>();
-        order1.put("id", 1);
-        order1.put("server", "Zophous");
-        order1.put("price", 12.99);
-        order1.put("type", "Plate");
-        order1.put("timestamp", "2024-10-10 12:30:00");
-        orders.add(order1);
-    
-        HashMap<String, Object> order2 = new HashMap<>();
-        order2.put("id", 2);
-        order2.put("server", "Fishy");
-        order2.put("price", 10.99);
-        order2.put("type", "Bowl + Med Drink");
-        order2.put("timestamp", "2024-10-10 12:35:00");
-        orders.add(order2);
-    
-        HashMap<String, Object> order3 = new HashMap<>();
-        order3.put("id", 3);
-        order3.put("server", "Timtak");
-        order3.put("price", 15.99);
-        order3.put("type", "Double Plate");
-        order3.put("timestamp", "2024-10-10 12:40:00");
-        orders.add(order3);
-    }
-    */
 
     private void displayOrders(JPanel orderPanel) {
         orderPanel.removeAll();

@@ -143,6 +143,24 @@ public class DBConnection {
         update_ingredients_table(menuitemskeys);
     }
 
+    public int getMaxID(String tableName) {
+        PreparedStatement stmt = null;
+        ResultSet result = null;
+        int maxID = -1;
+        String query = "SELECT MAX(id) FROM " + tableName;
+        try {
+            stmt = conn.prepareStatement(query);
+            result = stmt.executeQuery();
+            if (result.next()) {
+                maxID = result.getInt(1);
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return maxID;
+    }
+
     public ArrayList<HashMap<String, Object>> executeQuery(String query, ArrayList<HashMap<String, Object>> array) {
         Statement stmt = null;
         ArrayList<HashMap<String, Object>> resultList = new ArrayList<>();
@@ -322,10 +340,12 @@ public class DBConnection {
             result = stmt.executeQuery();
  
             while (result.next()) {
+                int id = result.getInt("id");
                 String name = result.getString("name");
                 double price = result.getDouble("price");
                 int entree = result.getInt("entree");
                 HashMap<String, Object> currentMenuItem = new HashMap<>();
+                currentMenuItem.put("id", id);
                 currentMenuItem.put("Name", name);
                 currentMenuItem.put("Additional Cost", price);
                 currentMenuItem.put("Entree", entree);
@@ -340,68 +360,45 @@ public class DBConnection {
         }
     }
 
-    public void sendMenuToBackend(ArrayList<HashMap<String, Object>> menuItems){
+    public void sendMenuToBackend(ArrayList<HashMap<String, Object>> menuItems, HashMap<Integer, ArrayList<Integer>> ingredientsmenuitems){
         System.out.println("Sending menu to backend...");
         PreparedStatement stmt = null;
         try {
-            // Delete existing entries in MenuItems and IngredientsMenuItems tables
-            String deleteMenuItemsSQL = "DELETE FROM MenuItems";
-            stmt = conn.prepareStatement(deleteMenuItemsSQL);
-            stmt.executeUpdate();
-            
-            String deleteIngredientsMenuItemsSQL = "DELETE FROM IngredientsMenuItems";
-            stmt = conn.prepareStatement(deleteIngredientsMenuItemsSQL);
-            stmt.executeUpdate();
-            
             // Insert new menu items
-            String insertMenuItemSQL = "INSERT INTO MenuItems (id, name, price, entree) VALUES (?, ?, ?, ?)";
+            String insertMenuItemSQL = "INSERT INTO menuitems (id, name, price, entree) VALUES (?, ?, ?, ?)" +
+            "ON CONFLICT (id) " +
+            "DO UPDATE SET name = EXCLUDED.name, price = EXCLUDED.price, entree = EXCLUDED.entree";
             stmt = conn.prepareStatement(insertMenuItemSQL);
             
             for (HashMap<String, Object> menuItem : menuItems) {
                 stmt.setInt(1, (Integer) menuItem.get("id"));
-                stmt.setString(2, (String) menuItem.get("name"));
-                stmt.setFloat(3, (Float) menuItem.get("price"));
-                stmt.setInt(4, (Integer) menuItem.get("entree"));
+                stmt.setString(2, (String) menuItem.get("Name"));
+                stmt.setDouble(3, (Double) menuItem.get("Additional Cost"));
+                stmt.setInt(4, (Integer) menuItem.get("Entree"));
                 stmt.executeUpdate();
             }
-        
-            // Update IngredientsMenuItems table
-            String insertIngredientMenuItemSQL = "INSERT INTO IngredientsMenuItems (IngredientKey, MenuItemKey, quantity) VALUES (?, ?, ?)";
-            stmt = conn.prepareStatement(insertIngredientMenuItemSQL);
-        
-            for (HashMap<String, Object> menuItem : menuItems) {
-                List<HashMap<String, Object>> ingredients = (List<HashMap<String, Object>>) menuItem.get("ingredients");
-                int menuItemId = (Integer) menuItem.get("id");
-            
-                for (HashMap<String, Object> ingredient : ingredients) {
-                    stmt.setInt(1, (Integer) ingredient.get("IngredientKey"));
-                    stmt.setInt(2, menuItemId);
-                    stmt.setInt(3, (Integer) ingredient.get("quantity"));
+
+            // update ingredientsmenuitems table
+            String query = "INSERT INTO ingredientsmenuitems (id, ingredientkey, menuitemkey, quantity) VALUES (?, ?, ?, ?)";
+            stmt = conn.prepareStatement(query);
+
+            int id = this.getMaxID("ingredientsmenuitems") + 1;
+
+            for (HashMap.Entry<Integer, ArrayList<Integer>> menuitem : ingredientsmenuitems.entrySet()) {
+                ArrayList<Integer> ingredientkeys =  menuitem.getValue();
+                for (Integer key : ingredientkeys) {
+                    stmt.setInt(1, id);
+                    stmt.setInt(2, key);
+                    stmt.setInt(3, menuitem.getKey());
+                    stmt.setInt(4, 100);
                     stmt.executeUpdate();
-                }
-            }
-        
-            // Update MenuItemsOrders table
-            String deleteMenuItemsOrdersSQL = "DELETE FROM MenuItemsOrders";
-            stmt = conn.prepareStatement(deleteMenuItemsOrdersSQL);
-            stmt.executeUpdate();
-        
-            String insertMenuItemOrderSQL = "INSERT INTO MenuItemsOrders (MenuItemKey, OrderKey) VALUES (?, ?)";
-            stmt = conn.prepareStatement(insertMenuItemOrderSQL);
-        
-            for (HashMap<String, Object> menuItem : menuItems) {
-                int menuItemId = (Integer) menuItem.get("id");
-                List<Integer> orders = (List<Integer>) menuItem.get("orders");
-            
-                for (int orderId : orders) {
-                    stmt.setInt(1, menuItemId);
-                    stmt.setInt(2, orderId);
-                    stmt.executeUpdate();
+                    ++id;
                 }
             }
             stmt.close();
-            System.out.println("MenuItems sent to backend successfully.");
-        } catch (SQLException e) {
+            System.out.println("Menu Items sent to backend successfully.");
+        }
+        catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -415,14 +412,16 @@ public class DBConnection {
             result = stmt.executeQuery();
  
             while (result.next()) {
+                int id = result.getInt("id");
                 String name = result.getString("name");
                 int stock = result.getInt("stock");
                 int threshold = result.getInt("threshold");
                 double price = result.getDouble("price");
                 String unit = result.getString("unit");
                 HashMap<String, Object> currentIngredient = new HashMap<>();
-                currentIngredient.put("Name", name);
-                currentIngredient.put("quantity", stock);
+                currentIngredient.put("id", id);
+                currentIngredient.put("name", name);
+                currentIngredient.put("stock", stock);
                 currentIngredient.put("threshold", threshold);
                 currentIngredient.put("price", price);
                 currentIngredient.put("unit", unit);
@@ -442,13 +441,10 @@ public class DBConnection {
         PreparedStatement stmt = null;
     
         try {
-            // Delete existing entries in Ingredients
-            String deleteIngredientsSQL = "DELETE FROM Ingredients";
-            stmt = conn.prepareStatement(deleteIngredientsSQL);
-            stmt.executeUpdate();
-    
             // Insert new ingredients
-            String insertIngredientSQL = "INSERT INTO ingredients (id, name, stock, threshold, price, unit) VALUES (?, ?, ?, ?, ?, ?)";
+            String insertIngredientSQL = "INSERT INTO ingredients (id, name, stock, threshold, price, unit) VALUES (?, ?, ?, ?, ?, ?) " +
+            "ON CONFLICT (id) " +
+            "DO UPDATE SET name = EXCLUDED.name, stock = EXCLUDED.stock, threshold = EXCLUDED.threshold, price = EXCLUDED.price, unit = EXCLUDED.unit";
             stmt = conn.prepareStatement(insertIngredientSQL);
     
             for (HashMap<String, Object> ingredient : ingredients) {
@@ -503,13 +499,10 @@ public class DBConnection {
         PreparedStatement stmt = null;
     
         try {
-            // Delete existing entries in Employees
-            String deleteEmployeesSQL = "DELETE FROM Employees";
-            stmt = conn.prepareStatement(deleteEmployeesSQL);
-            stmt.executeUpdate();
-    
             // Insert new employees
-            String insertEmployeeSQL = "INSERT INTO employees (id, username, pin, manager) VALUES (?, ?, ?, ?)";
+            String insertEmployeeSQL = "INSERT INTO employees (id, username, pin, manager) VALUES (?, ?, ?, ?) " +
+            "ON CONFLICT (id) " +
+            "DO UPDATE SET username = EXCLUDED.username, pin = EXCLUDED.pin, manager = EXCLUDED.manager";
             stmt = conn.prepareStatement(insertEmployeeSQL);
     
             for (HashMap<String, Object> employee : employees) {
@@ -531,7 +524,7 @@ public class DBConnection {
         ResultSet result = null;
         PreparedStatement stmt = null;
         try {
-            String sql = "select * from orders";
+            String sql = "select * from orders LIMIT 30";
             stmt = conn.prepareStatement(sql);
             result = stmt.executeQuery();
  
