@@ -295,9 +295,9 @@ public class DBConnection {
                 double price = result.getDouble("price");
                 int entree = result.getInt("entree");
                 HashMap<String, Object> currentMenuItem = new HashMap<>();
-                beefBroccoli.put("Name", name);
-                beefBroccoli.put("Additional Cost", price);
-                beefBroccoli.put("Entree", entree);
+                currentMenuItem.put("Name", name);
+                currentMenuItem.put("Additional Cost", price);
+                currentMenuItem.put("Entree", entree);
                 menuItems.add(currentMenuItem);
             }
             
@@ -307,6 +307,14 @@ public class DBConnection {
         catch (SQLException e) {
              System.out.println(e);
         }
+    }
+
+    private void sendMenuToBackend(ArrayList<HashMap<String, Object>> menuItems){
+        System.out.println("Sending menu to backend...");
+        for (HashMap<String, Object> menuItem : menuItems) {
+            System.out.println(menuItem);
+        }
+        
     }
 
     private void populateIngredients(ArrayList<HashMap<String, Object>> ingredients){

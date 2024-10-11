@@ -34,16 +34,20 @@ public class ManagerFrame {
         employees = new ArrayList<>();
         orders = new ArrayList<>();
 
+        //connect to database
+        DBConnection connect = new DBConnection(true); //true for manager view
+        connect.verifyCredentials();
+
         /* functions done in DBConnection instead. TODO: ensure correctness
         initializeMenuItems(); //DONE: call populateMenuItems(menuItems) from DBConnection class
         initializeIngredients(); //DONE: call populateIngredients(ingredients) from DBConnection class instead
         initializeEmployees(); //DONE: call populateEmployees(employees) from DBConnection class instead
         initializeOrders(); //DONE: call populateOrders(orders) from DBConnection class instead
         */
-        populateMenuItems(menuItems);
-        populateIngredients(ingredients);
-        populateEmployees(employees);
-        populateOrders(orders);
+        connect.populateMenuItems(menuItems);
+        connect.populateIngredients(ingredients);
+        connect.populateEmployees(employees);
+        connect.populateOrders(orders);
 
 
         // Set up the frame
