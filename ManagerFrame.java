@@ -38,7 +38,7 @@ public class ManagerFrame {
     private String  placeholdUsername = "Zophous";
     private int placeholdPin = 1111;
 
-    public ManagerFrame() {
+    public ManagerFrame(String username, int pin) {
         // initializing data structures for the popups
         menuItems = new ArrayList<>();
         ingredients = new ArrayList<>();
@@ -596,6 +596,6 @@ public class ManagerFrame {
     }
 
     public static void main(String[] args) {
-        new ManagerFrame();
+        new ManagerFrame("Zophous", 1111);
     }
 }

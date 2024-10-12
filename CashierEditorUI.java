@@ -18,10 +18,10 @@ public class CashierEditorUI extends javax.swing.JFrame {
    /**
     * Creates new form CashierEditorUI
     */
-   public CashierEditorUI() {
+   public CashierEditorUI(String username, int pin) {
         initComponents();
         getContentPane().setBackground(new java.awt.Color(255,51,0));
-        connect.verifyCredentials("Smiles", 3333);
+        connect.verifyCredentials(username, pin);
         ArrayList<HashMap<String, Object>> menuItems = new ArrayList<>();
         connect.populateMenuItems(menuItems);
         populateJPanel3(menuItems);
@@ -862,7 +862,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
        /* Create and display the form */
        java.awt.EventQueue.invokeLater(new Runnable() {
            public void run() {
-               new CashierEditorUI().setVisible(true);
+               new CashierEditorUI("Smiles", 3333).setVisible(true);
            }
        });
    }

@@ -51,7 +51,7 @@ class LoginPage extends JFrame implements ActionListener {
             if (verify.verifyCredentials(username, pin) && verify.manager) {
                 System.out.println("User validated as Manager.");
                 dispose();  
-                new ManagerFrame();
+                new ManagerFrame(username, pin);
             } else if (verify.verifyCredentials(username, pin)) {
                 System.out.println("User validated as Cashier.");
                 dispose(); 
@@ -77,7 +77,7 @@ class LoginPage extends JFrame implements ActionListener {
                 /* Create and display the form */
                 java.awt.EventQueue.invokeLater(new Runnable() {
                     public void run() {
-                        new CashierEditorUI().setVisible(true);
+                        new CashierEditorUI(username, pin).setVisible(true);
                     }
                 });
             } else {
