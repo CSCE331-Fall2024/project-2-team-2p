@@ -492,6 +492,11 @@ public class CashierEditorUI extends javax.swing.JFrame {
        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
        jButton1.setForeground(new java.awt.Color(255, 255, 255));
        jButton1.setText("Add to order");
+       jButton1.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton1ActionPerformed(evt);
+        }
+    });
 
        jPanel7.setBackground(new java.awt.Color(255, 51, 0));
 
@@ -721,7 +726,21 @@ public class CashierEditorUI extends javax.swing.JFrame {
 
    private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {                                          
        // TODO add your handling code here:
-   }                                         
+   }
+   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+        String[] ents = new String[Entrees.size()];
+        ents = Entrees.toArray(ents);
+        String[] sd = new String[Sides.size()];
+        sd = Sides.toArray(sd);                                     
+        Order order = connect.createOrder(type, ents);
+        connect.placeOrder(order, ents, sd);
+        Entrees.clear();
+        Sides.clear();
+        type = -1;
+        jTabbedPane1.setSelectedIndex(0);
+        totalPrice = 0;
+
+   }                                                
 
    private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {                                          
        // TODO add your handling code here:
