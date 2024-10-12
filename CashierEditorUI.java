@@ -25,6 +25,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
         ArrayList<HashMap<String, Object>> menuItems = new ArrayList<>();
         connect.populateMenuItems(menuItems);
         populateJPanel3(menuItems);
+        populateJPanel4(menuItems);
    }
 
 
@@ -52,21 +53,43 @@ public class CashierEditorUI extends javax.swing.JFrame {
             // Add an ActionListener to handle button clicks (optional)
             menuItemButton.addActionListener(evt -> {
                 int entre = 0;
-                if(type == 0){
-                    entre = 1;
-                }else if(type == 1){
-                    entre = 2;
-                }else if(type == 2){
-                    entre = 3;
+                switch (type){
+                    case 0:
+                        entre = 1;
+                        break;
+                    case 1:
+                        entre = 2;
+                        break;
+                    case 2:
+                        entre = 3;
+                        break;
                 }
                 Entrees.add(name);
                 System.out.println("Selected item: " + name);
+                totalPrice += price;
+                jLabel6.setText("Total: $" + totalPrice);
+                jLabel13.setText("Total: $" + totalPrice);
 
 
                 if(Entrees.size() == entre){
                     jTabbedPane1.setSelectedIndex(2);
                 }
                 System.out.println(Entrees.size() + " " + entre);
+                int iC = Entrees.size();
+                switch (iC) {
+                    case 1:
+                        jLabel8.setText(name);
+                        jLabel15.setText(name);
+                        break;
+                    case 2:
+                        jLabel9.setText(name);
+                        jLabel16.setText(name);
+                        break;
+                    case 3:
+                        jLabel10.setText(name);
+                        jLabel17.setText(name);
+                        break;
+                }
             });
         
             // Add the button to jPanel3
@@ -86,6 +109,50 @@ public class CashierEditorUI extends javax.swing.JFrame {
         jPanel3.revalidate();
         jPanel3.repaint();
         
+    }
+    public void populateJPanel4(ArrayList<HashMap<String, Object>> menuItems) {
+        jPanel4.removeAll(); // Clear existing components
+    
+        // Limit to a maximum of 4 items
+        int itemCount = Math.min(4, menuItems.size());
+    
+        // Set a layout manager for jPanel4 (using GridLayout)
+        jPanel4.setLayout(new GridLayout(itemCount + 1, 2, 10, 10)); // +1 for the back button, with 10px gaps
+    
+        // Add buttons for each menu item
+        for (int i = menuItems.size() - itemCount; i < menuItems.size(); i++) {
+            HashMap<String, Object> item = menuItems.get(i);
+            String name = (String) item.get("Name");
+            double price = (Double) item.get("Additional Cost");
+    
+            // Create a new button for each menu item
+            JButton menuItemButton = new JButton(name + " - $" + price);
+            // Optionally add an ActionListener here
+            menuItemButton.addActionListener(evt -> {
+                Sides.add(name);
+                jTabbedPane1.setSelectedIndex(3);
+                jLabel18.setText(name);
+                jLabel11.setText(name);
+            });
+    
+            // Add the button to jPanel4
+            jPanel4.add(menuItemButton);
+        }
+    
+        // Back button setup
+        JButton backButton2 = new JButton("Back");
+        backButton2.addActionListener(evt -> {
+            jTabbedPane1.setSelectedIndex(1);
+            Entrees.clear();
+            Sides.clear();
+        });
+    
+        // Add the back button to jPanel4
+        jPanel4.add(backButton2);
+    
+        // Revalidate and repaint to update the panel with new components
+        jPanel4.revalidate();
+        jPanel4.repaint();
     }
 
    /**
@@ -112,6 +179,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
        jLabel8 = new javax.swing.JLabel();
        jLabel9 = new javax.swing.JLabel();
        jLabel10 = new javax.swing.JLabel();
+       jLabel11 = new javax.swing.JLabel();
        jButton8 = new javax.swing.JButton();
        jButton9 = new javax.swing.JButton();
        jButton7 = new javax.swing.JButton();
@@ -147,6 +215,14 @@ public class CashierEditorUI extends javax.swing.JFrame {
        jTextField9 = new javax.swing.JTextField();
        jButton1 = new javax.swing.JButton();
        jButton5 = new javax.swing.JButton();
+       jPanel7 = new javax.swing.JPanel();
+       jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
 
        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
        setBackground(new java.awt.Color(255, 0, 51));
@@ -189,7 +265,8 @@ public class CashierEditorUI extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -204,6 +281,8 @@ public class CashierEditorUI extends javax.swing.JFrame {
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
                 .addComponent(jLabel6)
                 .addContainerGap())
@@ -293,125 +372,6 @@ public class CashierEditorUI extends javax.swing.JFrame {
            }
        });
 
-       jButton17.setBackground(new java.awt.Color(255, 51, 0));
-       jButton17.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton17.setForeground(new java.awt.Color(255, 255, 255));
-       jButton17.setText("Honey Wallnut Shrimp");
-       jButton17.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton17ActionPerformed(evt);
-           }
-       });
-
-       jButton18.setBackground(new java.awt.Color(255, 51, 0));
-       jButton18.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton18.setForeground(new java.awt.Color(255, 255, 255));
-       jButton18.setText("Orange Chicken");
-       jButton18.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton18ActionPerformed(evt);
-           }
-       });
-
-       jButton19.setBackground(new java.awt.Color(255, 51, 0));
-       jButton19.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton19.setForeground(new java.awt.Color(255, 255, 255));
-       jButton19.setText("Broccoli Beef");
-       jButton19.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton19ActionPerformed(evt);
-           }
-       });
-
-       jButton20.setBackground(new java.awt.Color(255, 51, 0));
-       jButton20.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton20.setForeground(new java.awt.Color(255, 255, 255));
-       jButton20.setText("Teriyaki Chicken");
-       jButton20.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton20ActionPerformed(evt);
-           }
-       });
-
-       jButton21.setBackground(new java.awt.Color(255, 51, 0));
-       jButton21.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton21.setForeground(new java.awt.Color(255, 255, 255));
-       jButton21.setText("Honey Sesame Chicken");
-       jButton21.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton21ActionPerformed(evt);
-           }
-       });
-
-       jButton22.setBackground(new java.awt.Color(255, 51, 0));
-       jButton22.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton22.setForeground(new java.awt.Color(255, 255, 255));
-       jButton22.setText(" Black Pepper Sirloin");
-       jButton22.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton22ActionPerformed(evt);
-           }
-       });
-
-       jButton23.setBackground(new java.awt.Color(255, 51, 0));
-       jButton23.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton23.setForeground(new java.awt.Color(255, 255, 255));
-       jButton23.setText("Beijing Beef");
-       jButton23.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton23ActionPerformed(evt);
-           }
-       });
-
-       jButton24.setBackground(new java.awt.Color(255, 51, 0));
-       jButton24.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton24.setForeground(new java.awt.Color(255, 255, 255));
-       jButton24.setText("Hot Ones Chicken");
-       jButton24.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton24ActionPerformed(evt);
-           }
-       });
-
-       jButton26.setBackground(new java.awt.Color(255, 51, 0));
-       jButton26.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton26.setForeground(new java.awt.Color(255, 255, 255));
-       jButton26.setText("Sweet Fire CB");
-       jButton26.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton26ActionPerformed(evt);
-           }
-       });
-
-       jButton27.setBackground(new java.awt.Color(255, 51, 0));
-       jButton27.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton27.setForeground(new java.awt.Color(255, 255, 255));
-       jButton27.setText("String Bean CB");
-       jButton27.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton27ActionPerformed(evt);
-           }
-       });
-
-       jButton28.setBackground(new java.awt.Color(255, 51, 0));
-       jButton28.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton28.setForeground(new java.awt.Color(255, 255, 255));
-       jButton28.setText("Mushroom Chicken");
-       jButton28.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton28ActionPerformed(evt);
-           }
-       });
-
-       jButton29.setBackground(new java.awt.Color(255, 51, 0));
-       jButton29.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton29.setForeground(new java.awt.Color(255, 255, 255));
-       jButton29.setText("Black Pepper Chicken");
-       jButton29.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton29ActionPerformed(evt);
-           }
-       });
 
        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -445,87 +405,31 @@ public class CashierEditorUI extends javax.swing.JFrame {
        jButton3.addActionListener(new java.awt.event.ActionListener() {
            public void actionPerformed(java.awt.event.ActionEvent evt) {
                jButton3ActionPerformed(evt);
+               System.out.println("Debug");
            }
        });
 
-       jButton11.setBackground(new java.awt.Color(255, 51, 0));
-       jButton11.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton11.setForeground(new java.awt.Color(255, 255, 255));
-       jButton11.setText("White Rice");
-       jButton11.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton11ActionPerformed(evt);
-           }
-       });
-
-       jButton12.setBackground(new java.awt.Color(255, 51, 0));
-       jButton12.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton12.setForeground(new java.awt.Color(255, 255, 255));
-       jButton12.setText("Chow Mein");
-       jButton12.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton12ActionPerformed(evt);
-           }
-       });
-
-       jButton13.setBackground(new java.awt.Color(255, 51, 0));
-       jButton13.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton13.setForeground(new java.awt.Color(255, 255, 255));
-       jButton13.setText("Super Greens");
-       jButton13.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton13ActionPerformed(evt);
-           }
-       });
-
-       jButton14.setBackground(new java.awt.Color(255, 51, 0));
-       jButton14.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-       jButton14.setForeground(new java.awt.Color(255, 255, 255));
-       jButton14.setText("Fried Rice");
-       jButton14.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jButton14ActionPerformed(evt);
-           }
-       });
 
        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-       jPanel4.setLayout(jPanel4Layout);
-       jPanel4Layout.setHorizontalGroup(
-           jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-               .addContainerGap()
-               .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                   .addComponent(jLabel3)
-                   .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
-               .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-           .addGroup(jPanel4Layout.createSequentialGroup()
-               .addGap(47, 47, 47)
-               .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                   .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                   .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-               .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 106, Short.MAX_VALUE)
-               .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                   .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
-                   .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE))
-               .addGap(53, 53, 53))
-       );
-       jPanel4Layout.setVerticalGroup(
-           jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-           .addGroup(jPanel4Layout.createSequentialGroup()
-               .addContainerGap()
-               .addComponent(jLabel3)
-               .addGap(27, 27, 27)
-               .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                   .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                   .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-               .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
-               .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                   .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                   .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-               .addGap(36, 36, 36)
-               .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addGap(18, 18, 18))
-       );
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel3)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addContainerGap(400, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jLabel3)
+                    .addGap(18, 18, 18)
+                    .addComponent(jButton3)
+                    .addContainerGap(250, Short.MAX_VALUE))
+        );
 
        jTabbedPane1.addTab("tab3", jPanel4);
 
@@ -589,36 +493,108 @@ public class CashierEditorUI extends javax.swing.JFrame {
        jButton1.setForeground(new java.awt.Color(255, 255, 255));
        jButton1.setText("Add to order");
 
-       javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-       jPanel5.setLayout(jPanel5Layout);
-       jPanel5Layout.setHorizontalGroup(
-           jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-           .addGroup(jPanel5Layout.createSequentialGroup()
-               .addContainerGap()
-               .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                   .addComponent(jLabel4)
-                   .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
-               .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-               .addContainerGap(127, Short.MAX_VALUE)
-               .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                   .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                   .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-               .addGap(116, 116, 116))
-       );
-       jPanel5Layout.setVerticalGroup(
-           jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-           .addGroup(jPanel5Layout.createSequentialGroup()
-               .addContainerGap()
-               .addComponent(jLabel4)
-               .addGap(18, 18, 18)
-               .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addGap(18, 18, 18)
-               .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-               .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addContainerGap())
-       );
+       jPanel7.setBackground(new java.awt.Color(255, 51, 0));
+
+        jLabel12.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setText("Cart");
+
+        jLabel13.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel13.setText("Total: $11.99");
+
+        jLabel14.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel14.setText("Plate");
+
+        jLabel15.setBackground(new java.awt.Color(204, 204, 204));
+        jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel15.setText(" ");
+
+        jLabel16.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel16.setText(" ");
+
+        jLabel17.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel17.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel17.setText(" ");
+
+        jLabel18.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel18.setText(" ");
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
+                    .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap())
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addComponent(jLabel12)
+                .addGap(32, 32, 32)
+                .addComponent(jLabel14)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel15)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel16)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel17)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
+                .addComponent(jLabel13)
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(116, 116, 116))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(252, 252, 252))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)))
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
 
        jTabbedPane1.addTab("tab4", jPanel5);
 
@@ -737,6 +713,10 @@ public class CashierEditorUI extends javax.swing.JFrame {
        type = 0;
        jTabbedPane1.setSelectedIndex(1);
        totalPrice = 8.99;
+       jLabel14.setText("Bowl");
+       jLabel7.setText("Bowl");
+       jLabel6.setText("Total: $" + totalPrice);
+       jLabel13.setText("Total: $" + totalPrice);
    }                                        
 
    private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {                                          
@@ -815,12 +795,20 @@ public class CashierEditorUI extends javax.swing.JFrame {
        type = 1;
        jTabbedPane1.setSelectedIndex(1);
        totalPrice = 9.99;
+       jLabel14.setText("Plate");
+       jLabel7.setText("Plate");
+       jLabel6.setText("Total: $" + totalPrice);
+       jLabel13.setText("Total: $" + totalPrice);
    }                                        
 
    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {                                         
        type = 2;
        jTabbedPane1.setSelectedIndex(1);
        totalPrice = 11.99;
+       jLabel14.setText("Bigger Plate");
+       jLabel7.setText("Bigger Plate");
+       jLabel6.setText("Total: $" + totalPrice);
+       jLabel13.setText("Total: $" + totalPrice);
    }                                        
 
    /**
@@ -887,6 +875,14 @@ public class CashierEditorUI extends javax.swing.JFrame {
    private javax.swing.JButton jButton9;
    private javax.swing.JLabel jLabel1;
    private javax.swing.JLabel jLabel10;
+   private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
    private javax.swing.JLabel jLabel2;
    private javax.swing.JLabel jLabel3;
    private javax.swing.JLabel jLabel4;
@@ -901,6 +897,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
    private javax.swing.JPanel jPanel4;
    private javax.swing.JPanel jPanel5;
    private javax.swing.JPanel jPanel6;
+   private javax.swing.JPanel jPanel7;
    private javax.swing.JTabbedPane jTabbedPane1;
    private javax.swing.JTextField jTextField1;
    private javax.swing.JTextField jTextField2;
