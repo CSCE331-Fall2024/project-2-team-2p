@@ -61,6 +61,7 @@ public class ManagerFrame {
         frame = new JFrame("Panda Express POS System - Manager");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
+        frame.setBackground(new java.awt.Color(255, 51, 0));
 
         // Main panel
         mainPanel = new JPanel();
@@ -68,7 +69,7 @@ public class ManagerFrame {
 
         JPanel orderPanel = new JPanel();
         orderPanel.setLayout(new BoxLayout(orderPanel, BoxLayout.Y_AXIS));
-        orderPanel.setBackground(Color.GRAY);
+        orderPanel.setBackground(new java.awt.Color(255, 51, 0));
 
         displayOrders(orderPanel);
 
@@ -81,17 +82,21 @@ public class ManagerFrame {
         centerPanel.add(graphLabel, BorderLayout.CENTER);
 
         JButton orderIngredientsButton = new JButton("Order Ingredients");
+        orderIngredientsButton.setBackground(new java.awt.Color(255, 51, 0));
         centerPanel.add(orderIngredientsButton, BorderLayout.SOUTH);
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new GridLayout(3, 1));
-        rightPanel.setBackground(Color.DARK_GRAY);
+        rightPanel.setBackground(new java.awt.Color(255, 51, 0));
 
         menuButton = new JButton("Menu Management");
+        menuButton.setBackground(new java.awt.Color(255, 51, 0));
         inventoryButton = new JButton("Inventory Management");
+        inventoryButton.setBackground(new java.awt.Color(255, 51, 0));
         employeesButton = new JButton("Employee Management");
+        employeesButton.setBackground(new java.awt.Color(255, 51, 0));
 
         // ####################################################
         // ACTION LISTENERS TO TRIGGER SUB VIEWS
