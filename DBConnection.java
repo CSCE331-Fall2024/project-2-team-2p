@@ -351,8 +351,11 @@ public class DBConnection {
         }
     }
 
-    /*============ FUNCTIONS FOR BUILDING MANAGER VIEW ============*/
-
+    /**
+     * Pulls menu items from database
+     * @author Matthew Fisher
+     * @param menuItems vector to fill in with menu items
+     */
     public void populateMenuItems(ArrayList<HashMap<String, Object>> menuItems){
         ResultSet result = null;
         PreparedStatement stmt = null;
@@ -382,6 +385,12 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Sends updated menu items to database
+     * @author Matthew Fisher
+     * @param menuItems vector with menu items
+     * @param ingredientsmenuitems vectore with ingredientsmenuitems
+     */
     public void sendMenuToBackend(ArrayList<HashMap<String, Object>> menuItems, HashMap<Integer, ArrayList<Integer>> ingredientsmenuitems){
         System.out.println("Sending menu to backend...");
         PreparedStatement stmt = null;
@@ -425,6 +434,11 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Pulls ingredients from database
+     * @author Matthew Fisher
+     * @param ingredients vector to fill in with ingredients
+     */
     public void populateIngredients(ArrayList<HashMap<String, Object>> ingredients){
         ResultSet result = null;
         PreparedStatement stmt = null;
@@ -458,6 +472,11 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Sends updated ingredients to database
+     * @author Matthew Fisher
+     * @param ingredients vector with menu items
+     */
     public void sendIngredientsToBackend(ArrayList<HashMap<String, Object>> ingredients) {
         System.out.println("Sending ingredients to backend...");
         PreparedStatement stmt = null;
@@ -486,7 +505,11 @@ public class DBConnection {
         }
     }
     
-
+    /**
+     * Pulls employees from database
+     * @author Matthew Fisher
+     * @param employees vector to fill in with employees
+     */
     public void populateEmployees(ArrayList<HashMap<String, Object>> employees){
         ResultSet result = null;
         PreparedStatement stmt = null;
@@ -516,6 +539,11 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Sends updated employees database
+     * @author Matthew Fisher
+     * @param employees vector with employees
+     */
     public void sendEmployeesToBackend(ArrayList<HashMap<String, Object>> employees) {
         System.out.println("Sending employees to backend...");
         PreparedStatement stmt = null;
@@ -542,6 +570,11 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Pulls orders from database
+     * @author Matthew Fisher
+     * @param orders vector to fill in with orders
+     */
     public void populateOrders(ArrayList<HashMap<String, Object>> orders){
         ResultSet result = null;
         PreparedStatement stmt = null;
@@ -572,8 +605,6 @@ public class DBConnection {
              System.out.println(e);
         }
     }
-
-    /*============ END FUNCTIONS FOR BUILDING MANAGER VIEW ============*/
     
 }
 
