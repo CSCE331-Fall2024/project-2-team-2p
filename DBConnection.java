@@ -26,9 +26,11 @@ public class DBConnection {
 
     /***
      * Verifies whether an employees username and pin are correct and whether they are a manager or not
+     * @author Myles
      * @param user 
      * @param pin
      * @return true if the credentials are valid and the manager status matches, false otherwise.
+     * @throws SQLException
      */
     public boolean verifyCredentials(String user, int pin) {
         ResultSet result = null;
@@ -65,9 +67,11 @@ public class DBConnection {
 
     /***
      * Creates order object which can then be used in the placeOrder method
+     * @author Myles
      * @param orderType 0 if bowl, 1 if plate, 2 if bigger plate
      * @param entrees All entrees that make up this order, do not include sides here
      * @return Completed order object
+     * @throws SQLException
      */
     public Order createOrder(int orderType, String[] entrees) {
         ResultSet result = null;
@@ -119,9 +123,11 @@ public class DBConnection {
 
     /**
      * Writes order to database as well as updates ingredients and menuitemsorders tables
+     * @author Myles 
      * @param order order object that is created using createOrder method
      * @param entrees All entrees that make up this order, do not include sides here
      * @param sides do not include entrees here
+     * @throws SQLException
      */
     public void placeOrder(Order order, String[] entrees, String[] sides) {
         PreparedStatement stmt = null;
@@ -142,6 +148,13 @@ public class DBConnection {
         update_ingredients_table(menuitemskeys);
     }
 
+    /**
+     * gets the maximum id for a specified table
+     * @author Myles
+     * @param tableName
+     * @return integer of the max id
+     * @throws SQLException
+     */
     public int getMaxID(String tableName) {
         PreparedStatement stmt = null;
         ResultSet result = null;
@@ -160,6 +173,14 @@ public class DBConnection {
         return maxID;
     }
 
+    /**
+     * based on a string query, executes it and populates an Array of Hashmaps with the result
+     * @author Myles
+     * @param query 
+     * @param array 
+     * @return ArrayList of a Hashmap with results of the query 
+     * @throws SQLException
+     */
     public ArrayList<HashMap<String, Object>> executeQuery(String query, ArrayList<HashMap<String, Object>> array) {
         Statement stmt = null;
         ArrayList<HashMap<String, Object>> resultList = new ArrayList<>();
@@ -191,7 +212,9 @@ public class DBConnection {
     }
 
     /**
+     * @author Myles
      * Closes db connection
+     * @throws SQLException
      */
     public void close() {
         try {
