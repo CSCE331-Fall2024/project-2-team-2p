@@ -29,28 +29,36 @@ public class CashierEditorUI extends javax.swing.JFrame {
    }
 
 
-    // Method to populate the menuItems ArrayList from the database
-    // Method to dynamically add buttons to jPanel3 based on menuItems
+    /** * Populates JPanel3 with the necessary entree menu items
+     * This function populates the third JPanel (Tab 3) by taking in
+     * all of the different menu items using the db connection class,
+     * and then displaying them into a grid of buttons which will then be
+     * clickable. I created this function to avoid statically coding
+     * the necessary buttons.
+     * @author Daniel McCord
+     * @param menuItems
+     * @return VOID
+     */
     public void populateJPanel3(ArrayList<HashMap<String, Object>> menuItems) {
-        jPanel3.removeAll(); // Clear existing components
+        jPanel3.removeAll();
         
-        // Determine the number of items to display (excluding the last 4)
-        int itemCount = Math.max(0, menuItems.size() - 4); // Ensure it doesn't go negative
+        //Determine the number of items to display (excluding the last 4)
+        int itemCount = Math.max(0, menuItems.size() - 4);
     
-        // Set a layout manager for jPanel3 (using GridLayout)
-        int rows = (int) Math.ceil(itemCount / 2.0); // 2 columns now
-        jPanel3.setLayout(new GridLayout(rows, 2, 10, 10)); // 2 columns, with 10px gaps
+        //Set a layout manager for jPanel3 (using GridLayout)
+        int rows = (int) Math.ceil(itemCount / 2.0);
+        jPanel3.setLayout(new GridLayout(rows, 2, 10, 10));
         
-        // Iterate over the menu items, but exclude the last 4 items
+        //Iterate over the menu items, but exclude the last 4 items
         for (int i = 0; i < itemCount; i++) {
             HashMap<String, Object> item = menuItems.get(i);
             String name = (String) item.get("Name");
             double price = (Double) item.get("Additional Cost");
         
-            // Create a new button for each menu item
+            //Create a new button for each menu item
             JButton menuItemButton = new JButton(name + " - $" + price);
         
-            // Add an ActionListener to handle button clicks (optional)
+            //Add an ActionListener to handle button clicks (optional)
             menuItemButton.addActionListener(evt -> {
                 int entre = 0;
                 switch (type){
@@ -92,24 +100,33 @@ public class CashierEditorUI extends javax.swing.JFrame {
                 }
             });
         
-            // Add the button to jPanel3
+            //Add the button to jPanel3
             jPanel3.add(menuItemButton);
         }
         JButton backButton = new JButton("Back");
         backButton.addActionListener(evt -> {
             Entrees.clear();
             type = -1;
-            jTabbedPane1.setSelectedIndex(0); // Assuming the first tab is the previous screen
+            jTabbedPane1.setSelectedIndex(0);
         });
         
-        // Add the back button to the last row in jPanel3
+        //Add the back button to the last row in jPanel3
         jPanel3.add(backButton);
 
-        // Revalidate and repaint to update the panel with new components
+        //Revalidate and repaint to update the panel with new components
         jPanel3.revalidate();
         jPanel3.repaint();
         
     }
+    /** *This code populates JPanel4 (Tab 4), with the sides menu items
+     * I split the sides and the entrees up into two panels in order to make
+     * the order process much more seamless. This function is very similar
+     * to the previous one, except now we are populating the sides rather
+     * than the entrees
+     * @author Daniel McCord
+     * @param menuItems
+     * @return VOID
+     */
     public void populateJPanel4(ArrayList<HashMap<String, Object>> menuItems) {
         jPanel4.removeAll(); // Clear existing components
     
