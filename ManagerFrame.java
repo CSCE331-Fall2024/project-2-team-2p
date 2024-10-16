@@ -102,6 +102,18 @@ public class ManagerFrame {
         // ACTION LISTENERS TO TRIGGER SUB VIEWS
         // ####################################################
 
+        orderIngredientsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                boolean status = connect.orderIngredients();
+                if (status) {
+                    JOptionPane.showMessageDialog(frame, "Ingredients Ordered Successfully", "Popup", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(frame, "Error Ordering Ingredients", "Popup", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+        
         menuButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showMenuManagement();

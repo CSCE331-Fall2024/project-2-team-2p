@@ -1,7 +1,6 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class DBConnection {
     private Connection conn = null;
@@ -579,7 +578,7 @@ public class DBConnection {
         ResultSet result = null;
         PreparedStatement stmt = null;
         try {
-            String sql = "select * from orders LIMIT 30";
+            String sql = "SELECT * FROM orders LIMIT 30";
             stmt = conn.prepareStatement(sql);
             result = stmt.executeQuery();
  
@@ -605,7 +604,34 @@ public class DBConnection {
              System.out.println(e);
         }
     }
-    
+
+    public boolean orderIngredients() {
+        ResultSet result = null;
+        PreparedStatement stmt = null;
+        HashMap<Integer, Integer> update = new HashMap<>();
+        try {
+            String sql = "SELECT * FROM ingredients WHERE stock < threshold";
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
+            while (result.next()) {
+                update.put(result.getInt("id"), result.getInt("threshold")*2);
+            }
+            stmt.close();
+            result.close();
+            sql = "UPDATE ingredients SET stock = ? WHERE id = ?";
+            for (Integer id : update.keySet()) {
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, update.get(id));
+                stmt.setInt(2, id);
+                stmt.executeUpdate();
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }
 
     // public static void main(String[] args) {
