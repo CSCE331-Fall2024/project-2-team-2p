@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
@@ -70,6 +71,7 @@ public class ManagerFrame {
         JPanel orderPanel = new JPanel();
         orderPanel.setLayout(new BoxLayout(orderPanel, BoxLayout.Y_AXIS));
         orderPanel.setBackground(new java.awt.Color(255, 51, 0));
+        orderPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
 
         displayOrders(orderPanel);
 
@@ -517,24 +519,6 @@ public class ManagerFrame {
             populateEmployeeTableModel();
         }
     }
-
-
-    /*DONE: call sendMenuToBackend() in DBConnection
-    private void sendEmployeesToBackend() {
-        System.out.println("Sending employees to backend...");
-        for (HashMap<String, Object> employee : employees) {
-            System.out.println(employee);
-        }
-    }*/
-    
-    
-    /*DONE: call sendMenuToBackend() in DBConnection
-    private void sendEmployeesToBackend() {
-        System.out.println("Sending employees to backend...");
-        for (HashMap<String, Object> employee : employees) {
-            System.out.println(employee);
-        }
-    }*/
     
     private void showEmployeeManagement() {
         String[] columnNames = {"ID", "Username", "PIN", "Manager"};
@@ -599,6 +583,15 @@ public class ManagerFrame {
     
         for (HashMap<String, Object> order : orders) {
             String type = order.get("type").toString();
+            if (type.equals("0")) {
+                type = "Bowl";
+            }
+            else if (type.equals("1")) {
+                type = "Plate";
+            }
+            else if (type.equals("2")) {
+                type = "Bigger Plate";
+            }
             Double price = (Double) order.get("price");
             orderPanel.add(new JLabel(type + ": $" + price));
         }

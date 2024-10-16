@@ -591,7 +591,7 @@ public class DBConnection {
                 HashMap<String, Object> currentOrder = new HashMap<>();
                 currentOrder.put("id", id);
                 currentOrder.put("server", server);
-                currentOrder.put("price", price);
+                currentOrder.put("price", Math.round(price * 100.0) / 100.0);
                 currentOrder.put("type", type);
                 currentOrder.put("timestamp", timestamp);
                 orders.add(currentOrder);
@@ -605,6 +605,12 @@ public class DBConnection {
         }
     }
 
+    /***
+     * Orders ingredients that have a stock below threshold
+     * @author Myles
+     * @return true if ordered successfully, otherwise false
+     * @throws SQLException
+     */
     public boolean orderIngredients() {
         ResultSet result = null;
         PreparedStatement stmt = null;
