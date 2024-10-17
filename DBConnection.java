@@ -1,7 +1,6 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class DBConnection {
     private Connection conn = null;
@@ -26,9 +25,11 @@ public class DBConnection {
 
     /***
      * Verifies whether an employees username and pin are correct and whether they are a manager or not
+     * @author Myles
      * @param user 
      * @param pin
      * @return true if the credentials are valid and the manager status matches, false otherwise.
+     * @throws SQLException
      */
     public boolean verifyCredentials(String user, int pin) {
         ResultSet result = null;
@@ -65,9 +66,11 @@ public class DBConnection {
 
     /***
      * Creates order object which can then be used in the placeOrder method
+     * @author Myles
      * @param orderType 0 if bowl, 1 if plate, 2 if bigger plate
      * @param entrees All entrees that make up this order, do not include sides here
      * @return Completed order object
+     * @throws SQLException
      */
     public Order createOrder(int orderType, String[] entrees) {
         ResultSet result = null;
@@ -119,9 +122,11 @@ public class DBConnection {
 
     /**
      * Writes order to database as well as updates ingredients and menuitemsorders tables
+     * @author Myles 
      * @param order order object that is created using createOrder method
      * @param entrees All entrees that make up this order, do not include sides here
      * @param sides do not include entrees here
+     * @throws SQLException
      */
     public void placeOrder(Order order, String[] entrees, String[] sides) {
         PreparedStatement stmt = null;
@@ -142,6 +147,13 @@ public class DBConnection {
         update_ingredients_table(menuitemskeys);
     }
 
+    /**
+     * gets the maximum id for a specified table
+     * @author Myles
+     * @param tableName
+     * @return integer of the max id
+     * @throws SQLException
+     */
     public int getMaxID(String tableName) {
         PreparedStatement stmt = null;
         ResultSet result = null;
@@ -160,6 +172,14 @@ public class DBConnection {
         return maxID;
     }
 
+    /**
+     * based on a string query, executes it and populates an Array of Hashmaps with the result
+     * @author Myles
+     * @param query 
+     * @param array 
+     * @return ArrayList of a Hashmap with results of the query 
+     * @throws SQLException
+     */
     public ArrayList<HashMap<String, Object>> executeQuery(String query, ArrayList<HashMap<String, Object>> array) {
         Statement stmt = null;
         ArrayList<HashMap<String, Object>> resultList = new ArrayList<>();
@@ -191,7 +211,9 @@ public class DBConnection {
     }
 
     /**
+     * @author Myles
      * Closes db connection
+     * @throws SQLException
      */
     public void close() {
         try {
@@ -328,8 +350,11 @@ public class DBConnection {
         }
     }
 
-    /*============ FUNCTIONS FOR BUILDING MANAGER VIEW ============*/
-
+    /**
+     * Pulls menu items from database
+     * @author Matthew Fisher
+     * @param menuItems vector to fill in with menu items
+     */
     public void populateMenuItems(ArrayList<HashMap<String, Object>> menuItems){
         ResultSet result = null;
         PreparedStatement stmt = null;
@@ -359,6 +384,12 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Sends updated menu items to database
+     * @author Matthew Fisher
+     * @param menuItems vector with menu items
+     * @param ingredientsmenuitems vectore with ingredientsmenuitems
+     */
     public void sendMenuToBackend(ArrayList<HashMap<String, Object>> menuItems, HashMap<Integer, ArrayList<Integer>> ingredientsmenuitems){
         System.out.println("Sending menu to backend...");
         PreparedStatement stmt = null;
@@ -402,6 +433,11 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Pulls ingredients from database
+     * @author Matthew Fisher
+     * @param ingredients vector to fill in with ingredients
+     */
     public void populateIngredients(ArrayList<HashMap<String, Object>> ingredients){
         ResultSet result = null;
         PreparedStatement stmt = null;
@@ -435,6 +471,11 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Sends updated ingredients to database
+     * @author Matthew Fisher
+     * @param ingredients vector with menu items
+     */
     public void sendIngredientsToBackend(ArrayList<HashMap<String, Object>> ingredients) {
         System.out.println("Sending ingredients to backend...");
         PreparedStatement stmt = null;
@@ -463,7 +504,11 @@ public class DBConnection {
         }
     }
     
-
+    /**
+     * Pulls employees from database
+     * @author Matthew Fisher
+     * @param employees vector to fill in with employees
+     */
     public void populateEmployees(ArrayList<HashMap<String, Object>> employees){
         ResultSet result = null;
         PreparedStatement stmt = null;
@@ -493,6 +538,11 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Sends updated employees database
+     * @author Matthew Fisher
+     * @param employees vector with employees
+     */
     public void sendEmployeesToBackend(ArrayList<HashMap<String, Object>> employees) {
         System.out.println("Sending employees to backend...");
         PreparedStatement stmt = null;
@@ -519,11 +569,16 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Pulls orders from database
+     * @author Matthew Fisher
+     * @param orders vector to fill in with orders
+     */
     public void populateOrders(ArrayList<HashMap<String, Object>> orders){
         ResultSet result = null;
         PreparedStatement stmt = null;
         try {
-            String sql = "select * from orders LIMIT 30";
+            String sql = "SELECT * FROM orders LIMIT 30";
             stmt = conn.prepareStatement(sql);
             result = stmt.executeQuery();
  
@@ -536,7 +591,7 @@ public class DBConnection {
                 HashMap<String, Object> currentOrder = new HashMap<>();
                 currentOrder.put("id", id);
                 currentOrder.put("server", server);
-                currentOrder.put("price", price);
+                currentOrder.put("price", Math.round(price * 100.0) / 100.0);
                 currentOrder.put("type", type);
                 currentOrder.put("timestamp", timestamp);
                 orders.add(currentOrder);
@@ -550,8 +605,39 @@ public class DBConnection {
         }
     }
 
-    /*============ END FUNCTIONS FOR BUILDING MANAGER VIEW ============*/
-    
+    /***
+     * Orders ingredients that have a stock below threshold
+     * @author Myles
+     * @return true if ordered successfully, otherwise false
+     * @throws SQLException
+     */
+    public boolean orderIngredients() {
+        ResultSet result = null;
+        PreparedStatement stmt = null;
+        HashMap<Integer, Integer> update = new HashMap<>();
+        try {
+            String sql = "SELECT * FROM ingredients WHERE stock < threshold";
+            stmt = conn.prepareStatement(sql);
+            result = stmt.executeQuery();
+            while (result.next()) {
+                update.put(result.getInt("id"), result.getInt("threshold")*2);
+            }
+            stmt.close();
+            result.close();
+            sql = "UPDATE ingredients SET stock = ? WHERE id = ?";
+            for (Integer id : update.keySet()) {
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, update.get(id));
+                stmt.setInt(2, id);
+                stmt.executeUpdate();
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 }
 
     // public static void main(String[] args) {

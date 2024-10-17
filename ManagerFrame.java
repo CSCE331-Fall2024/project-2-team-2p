@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.*;
@@ -23,22 +24,12 @@ public class ManagerFrame {
     private ArrayList<HashMap<String, Object>> employees;
     private ArrayList<HashMap<String, Object>> orders;
     private HashMap<Integer, ArrayList<Integer>> ingredientsmenuitems = new HashMap<>();
-    private ArrayList<HashMap<String, Object>> viewOrders;
-
-    // data structures for removed entries
-    private ArrayList<HashMap<String, Object>> removedMenuItems; 
-    private ArrayList<HashMap<String, Object>> removedIngredients;
-    private ArrayList<HashMap<String, Object>> removedEmployees;
 
     private DefaultTableModel tableModel;
 
     private DBConnection connect;
 
-    //TODO: make sure user is found
-    private String  placeholdUsername = "Zophous";
-    private int placeholdPin = 1111;
-
-    public ManagerFrame() {
+    public ManagerFrame(String username, int pin) {
         // initializing data structures for the popups
         menuItems = new ArrayList<>();
         ingredients = new ArrayList<>();
@@ -47,10 +38,8 @@ public class ManagerFrame {
 
         //connect to database
         connect = new DBConnection(true); //true for manager view
-        connect.verifyCredentials(placeholdUsername, placeholdPin);
+        connect.verifyCredentials(username, pin);
 
-        /* functions done in DBConnection instead. TODO: ensure correctness
-        */
         connect.populateMenuItems(menuItems);
         connect.populateIngredients(ingredients);
         connect.populateEmployees(employees);
@@ -70,6 +59,7 @@ public class ManagerFrame {
         JPanel orderPanel = new JPanel();
         orderPanel.setLayout(new BoxLayout(orderPanel, BoxLayout.Y_AXIS));
         orderPanel.setBackground(new java.awt.Color(255, 51, 0));
+        orderPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
 
         displayOrders(orderPanel);
 
@@ -102,6 +92,18 @@ public class ManagerFrame {
         // ACTION LISTENERS TO TRIGGER SUB VIEWS
         // ####################################################
 
+        orderIngredientsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                boolean status = connect.orderIngredients();
+                if (status) {
+                    JOptionPane.showMessageDialog(frame, "Ingredients Ordered Successfully", "Popup", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(frame, "Error Ordering Ingredients", "Popup", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+        
         menuButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showMenuManagement();
@@ -505,24 +507,6 @@ public class ManagerFrame {
             populateEmployeeTableModel();
         }
     }
-
-
-    /*DONE: call sendMenuToBackend() in DBConnection
-    private void sendEmployeesToBackend() {
-        System.out.println("Sending employees to backend...");
-        for (HashMap<String, Object> employee : employees) {
-            System.out.println(employee);
-        }
-    }*/
-    
-    
-    /*DONE: call sendMenuToBackend() in DBConnection
-    private void sendEmployeesToBackend() {
-        System.out.println("Sending employees to backend...");
-        for (HashMap<String, Object> employee : employees) {
-            System.out.println(employee);
-        }
-    }*/
     
     private void showEmployeeManagement() {
         String[] columnNames = {"ID", "Username", "PIN", "Manager"};
@@ -587,6 +571,15 @@ public class ManagerFrame {
     
         for (HashMap<String, Object> order : orders) {
             String type = order.get("type").toString();
+            if (type.equals("0")) {
+                type = "Bowl";
+            }
+            else if (type.equals("1")) {
+                type = "Plate";
+            }
+            else if (type.equals("2")) {
+                type = "Bigger Plate";
+            }
             Double price = (Double) order.get("price");
             orderPanel.add(new JLabel(type + ": $" + price));
         }
@@ -596,6 +589,6 @@ public class ManagerFrame {
     }
 
     public static void main(String[] args) {
-        new ManagerFrame();
+        new ManagerFrame("Zophous", 1111);
     }
 }
