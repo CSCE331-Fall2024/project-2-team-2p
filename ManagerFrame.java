@@ -35,10 +35,6 @@ public class ManagerFrame {
 
     private DBConnection connect;
 
-    //TODO: make sure user is found
-    private String  placeholdUsername = "Zophous";
-    private int placeholdPin = 1111;
-
     public ManagerFrame(String username, int pin) {
         // initializing data structures for the popups
         menuItems = new ArrayList<>();
@@ -48,7 +44,7 @@ public class ManagerFrame {
 
         //connect to database
         connect = new DBConnection(true); //true for manager view
-        connect.verifyCredentials(placeholdUsername, placeholdPin);
+        connect.verifyCredentials(username, pin);
 
         /* functions done in DBConnection instead. TODO: ensure correctness
         */
@@ -62,7 +58,7 @@ public class ManagerFrame {
         frame = new JFrame("Panda Express POS System - Manager");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
-        frame.setBackground(new java.awt.Color(255, 51, 0));
+        frame.setBackground(new java.awt.Color(231, 81, 82));
 
         // Main panel
         mainPanel = new JPanel();
@@ -70,7 +66,7 @@ public class ManagerFrame {
 
         JPanel orderPanel = new JPanel();
         orderPanel.setLayout(new BoxLayout(orderPanel, BoxLayout.Y_AXIS));
-        orderPanel.setBackground(new java.awt.Color(255, 51, 0));
+        orderPanel.setBackground(new java.awt.Color(231, 81, 82));
         orderPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
 
         displayOrders(orderPanel);
@@ -84,21 +80,21 @@ public class ManagerFrame {
         centerPanel.add(graphLabel, BorderLayout.CENTER);
 
         JButton orderIngredientsButton = new JButton("Order Ingredients");
-        orderIngredientsButton.setBackground(new java.awt.Color(255, 51, 0));
+        orderIngredientsButton.setBackground(new java.awt.Color(231, 81, 82));
         centerPanel.add(orderIngredientsButton, BorderLayout.SOUTH);
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new GridLayout(3, 1));
-        rightPanel.setBackground(new java.awt.Color(255, 51, 0));
+        rightPanel.setBackground(new java.awt.Color(231, 81, 82));
 
         menuButton = new JButton("Menu Management");
-        menuButton.setBackground(new java.awt.Color(255, 51, 0));
+        menuButton.setBackground(new java.awt.Color(231, 81, 82));
         inventoryButton = new JButton("Inventory Management");
-        inventoryButton.setBackground(new java.awt.Color(255, 51, 0));
+        inventoryButton.setBackground(new java.awt.Color(231, 81, 82));
         employeesButton = new JButton("Employee Management");
-        employeesButton.setBackground(new java.awt.Color(255, 51, 0));
+        employeesButton.setBackground(new java.awt.Color(231, 81, 82));
 
         // ####################################################
         // ACTION LISTENERS TO TRIGGER SUB VIEWS
