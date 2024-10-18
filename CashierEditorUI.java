@@ -825,7 +825,8 @@ public class CashierEditorUI extends javax.swing.JFrame {
    }                                           
 
    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {                                         
-       // TODO add your handling code here:
+        dispose(); 
+        new LoginPage();
    }                                        
 
    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {                                         

@@ -13,7 +13,7 @@ class LoginPage extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
 
-        getContentPane().setBackground(new java.awt.Color(255, 51, 0));
+        getContentPane().setBackground(new java.awt.Color(231, 81, 82));
         
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setBounds(10, 10, 80, 25);

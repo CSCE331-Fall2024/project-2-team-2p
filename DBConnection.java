@@ -335,7 +335,7 @@ public class DBConnection {
                 result = stmt.executeQuery();
 
                 if (result.next()) {
-                    int currentQuantity = result.getInt("quantity");
+                    int currentQuantity = result.getInt("stock");
                     int newQuantity = currentQuantity - usedQuantity;
 
                     stmt = conn.prepareStatement("UPDATE ingredients SET stock = ? WHERE id = ?");
