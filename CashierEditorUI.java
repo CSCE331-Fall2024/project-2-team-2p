@@ -21,8 +21,8 @@ public class CashierEditorUI extends javax.swing.JFrame {
     */
    public CashierEditorUI(String username, int pin) {
         initComponents();
-        getContentPane().setBackground(new java.awt.Color(255,51,0));
-        connect.verifyCredentials("Smiles", 3333);
+        getContentPane().setBackground(new java.awt.Color(231, 81, 82));
+        connect.verifyCredentials(username, pin);
         ArrayList<HashMap<String, Object>> menuItems = new ArrayList<>();
         connect.populateMenuItems(menuItems);
         populateJPanel3(menuItems);
@@ -34,9 +34,8 @@ public class CashierEditorUI extends javax.swing.JFrame {
     // Method to dynamically add buttons to jPanel3 based on menuItems
     public void populateJPanel3(ArrayList<HashMap<String, Object>> menuItems) {
         jPanel3.removeAll(); // Clear existing components
-        
         // Determine the number of items to display (excluding the last 4)
-        int itemCount = Math.max(0, menuItems.size() - 4); // Ensure it doesn't go negative
+        int itemCount = Math.max(0, menuItems.size()); // Ensure it doesn't go negative
     
         // Set a layout manager for jPanel3 (using GridLayout)
         int rows = (int) Math.ceil(itemCount / 2.0); // 2 columns now
@@ -47,54 +46,57 @@ public class CashierEditorUI extends javax.swing.JFrame {
             HashMap<String, Object> item = menuItems.get(i);
             String name = (String) item.get("Name");
             double price = (Double) item.get("Additional Cost");
-        
+            int entreebool = (int) item.get("Entree");
+            
+            if(entreebool == 1){
             // Create a new button for each menu item
-            JButton menuItemButton = new JButton(name + " - $" + price);
-        
-            // Add an ActionListener to handle button clicks (optional)
-            menuItemButton.addActionListener(evt -> {
-                int entre = 0;
-                switch (type){
-                    case 0:
-                        entre = 1;
-                        break;
-                    case 1:
-                        entre = 2;
-                        break;
-                    case 2:
-                        entre = 3;
-                        break;
-                }
-                Entrees.add(name);
-                System.out.println("Selected item: " + name);
-                totalPrice += price;
-                jLabel6.setText("Total: $" + totalPrice);
-                jLabel13.setText("Total: $" + totalPrice);
+                JButton menuItemButton = new JButton(name + " - $" + price);
+            
+                // Add an ActionListener to handle button clicks (optional)
+                menuItemButton.addActionListener(evt -> {
+                    int entre = 0;
+                    switch (type){
+                        case 0:
+                            entre = 1;
+                            break;
+                        case 1:
+                            entre = 2;
+                            break;
+                        case 2:
+                            entre = 3;
+                            break;
+                    }
+                    Entrees.add(name);
+                    System.out.println("Selected item: " + name);
+                    totalPrice += price;
+                    jLabel6.setText("Total: $" + totalPrice);
+                    jLabel13.setText("Total: $" + totalPrice);
 
 
-                if(Entrees.size() == entre){
-                    jTabbedPane1.setSelectedIndex(2);
-                }
-                System.out.println(Entrees.size() + " " + entre);
-                int iC = Entrees.size();
-                switch (iC) {
-                    case 1:
-                        jLabel8.setText(name);
-                        jLabel15.setText(name);
-                        break;
-                    case 2:
-                        jLabel9.setText(name);
-                        jLabel16.setText(name);
-                        break;
-                    case 3:
-                        jLabel10.setText(name);
-                        jLabel17.setText(name);
-                        break;
-                }
-            });
+                    if(Entrees.size() == entre){
+                        jTabbedPane1.setSelectedIndex(2);
+                    }
+                    System.out.println(Entrees.size() + " " + entre);
+                    int iC = Entrees.size();
+                    switch (iC) {
+                        case 1:
+                            jLabel8.setText(name);
+                            jLabel15.setText(name);
+                            break;
+                        case 2:
+                            jLabel9.setText(name);
+                            jLabel16.setText(name);
+                            break;
+                        case 3:
+                            jLabel10.setText(name);
+                            jLabel17.setText(name);
+                            break;
+                    }
+                });
         
             // Add the button to jPanel3
             jPanel3.add(menuItemButton);
+            }
         }
         JButton backButton = new JButton("Back");
         backButton.addActionListener(evt -> {
@@ -111,37 +113,46 @@ public class CashierEditorUI extends javax.swing.JFrame {
         jPanel3.repaint();
         
     }
+
     public void populateJPanel4(ArrayList<HashMap<String, Object>> menuItems) {
         jPanel4.removeAll(); // Clear existing components
     
-        // Limit to a maximum of 4 items
-        int itemCount = Math.min(4, menuItems.size());
-    
-        // Set a layout manager for jPanel4 (using GridLayout)
-        jPanel4.setLayout(new GridLayout(itemCount + 1, 2, 10, 10)); // +1 for the back button, with 10px gaps
+        // Set BoxLayout for jPanel4 (Y_AXIS for vertical stacking)
+        jPanel4.setLayout(new BoxLayout(jPanel4, BoxLayout.Y_AXIS));
     
         // Add buttons for each menu item
-        for (int i = menuItems.size() - itemCount; i < menuItems.size(); i++) {
+        for (int i = 0; i < menuItems.size(); i++) {
             HashMap<String, Object> item = menuItems.get(i);
             String name = (String) item.get("Name");
             double price = (Double) item.get("Additional Cost");
+            int entreebool = (int) item.get("Entree");
     
-            // Create a new button for each menu item
-            JButton menuItemButton = new JButton(name + " - $" + price);
-            // Optionally add an ActionListener here
-            menuItemButton.addActionListener(evt -> {
-                Sides.add(name);
-                jTabbedPane1.setSelectedIndex(3);
-                jLabel18.setText(name);
-                jLabel11.setText(name);
-            });
+            if (entreebool == 0) {
+                // Create a new button for each menu item
+                JButton menuItemButton = new JButton(name + " - $" + price);
     
-            // Add the button to jPanel4
-            jPanel4.add(menuItemButton);
+                // Set preferred size for the button to increase height
+                menuItemButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+                menuItemButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    
+                // Optionally add an ActionListener here
+                menuItemButton.addActionListener(evt -> {
+                    Sides.add(name);
+                    jTabbedPane1.setSelectedIndex(3);
+                    jLabel18.setText(name);
+                    jLabel11.setText(name);
+                });
+    
+                // Add the button to jPanel4
+                jPanel4.add(menuItemButton);
+                jPanel4.add(Box.createRigidArea(new Dimension(0, 10))); // Add space between buttons
+            }
         }
     
         // Back button setup
         JButton backButton2 = new JButton("Back");
+        backButton2.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+        backButton2.setAlignmentX(Component.CENTER_ALIGNMENT);
         backButton2.addActionListener(evt -> {
             jTabbedPane1.setSelectedIndex(1);
             Entrees.clear();
@@ -165,7 +176,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
    private void initComponents() {
 
-       jTextField1 = new javax.swing.JTextField();
+       jTextField1 = new javax.swing.JLabel();
        jPanel1 = new javax.swing.JPanel();
        jTextField2 = new javax.swing.JTextField();
        jTextField3 = new javax.swing.JTextField();
@@ -226,16 +237,11 @@ public class CashierEditorUI extends javax.swing.JFrame {
         jLabel18 = new javax.swing.JLabel();
 
        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-       setBackground(new java.awt.Color(255, 0, 51));
+       setBackground(new java.awt.Color(231, 81, 82));
 
-       jTextField1.setBackground(new java.awt.Color(255, 51, 51));
+       jTextField1.setBackground(new java.awt.Color(231, 81, 82));
        jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
        jTextField1.setText("Meals");
-       jTextField1.addActionListener(new java.awt.event.ActionListener() {
-           public void actionPerformed(java.awt.event.ActionEvent evt) {
-               jTextField1ActionPerformed(evt);
-           }
-       });
 
         jPanel1.setLayout(new BoxLayout(jPanel1, BoxLayout.Y_AXIS));
         jPanel1.setBackground(new java.awt.Color(204, 204, 204));
@@ -296,7 +302,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
        jLabel1.setText("Type of Meal");
 
-       jButton8.setBackground(new java.awt.Color(255, 51, 0));
+       jButton8.setBackground(new java.awt.Color(231, 81, 82));
        jButton8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
        jButton8.setForeground(new java.awt.Color(255, 255, 255));
        jButton8.setText("Bowl");
@@ -306,7 +312,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
            }
        });
 
-       jButton9.setBackground(new java.awt.Color(255, 51, 0));
+       jButton9.setBackground(new java.awt.Color(231, 81, 82));
        jButton9.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
        jButton9.setForeground(new java.awt.Color(255, 255, 255));
        jButton9.setText("Plate");
@@ -316,7 +322,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
            }
        });
 
-       jButton7.setBackground(new java.awt.Color(255, 51, 0));
+       jButton7.setBackground(new java.awt.Color(231, 81, 82));
        jButton7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
        jButton7.setForeground(new java.awt.Color(255, 255, 255));
        jButton7.setText("Bigger Plate");
@@ -446,7 +452,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
            }
        });
 
-       jPanel6.setBackground(new java.awt.Color(255, 51, 0));
+       jPanel6.setBackground(new java.awt.Color(231, 81, 82));
 
        jTextField6.setText("Cart");
        jTextField6.addActionListener(new java.awt.event.ActionListener() {
@@ -489,7 +495,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
                .addContainerGap())
        );
 
-       jButton1.setBackground(new java.awt.Color(255, 51, 0));
+       jButton1.setBackground(new java.awt.Color(231, 81, 82));
        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
        jButton1.setForeground(new java.awt.Color(255, 255, 255));
        jButton1.setText("Add to order");
@@ -499,7 +505,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
         }
     });
 
-       jPanel7.setBackground(new java.awt.Color(255, 51, 0));
+       jPanel7.setBackground(new java.awt.Color(231, 81, 82));
 
         jLabel12.setBackground(new java.awt.Color(255, 255, 255));
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -604,10 +610,10 @@ public class CashierEditorUI extends javax.swing.JFrame {
 
        jTabbedPane1.addTab("tab4", jPanel5);
 
-       jButton5.setBackground(new java.awt.Color(255, 51, 9));
+       jButton5.setBackground(new java.awt.Color(231, 81, 82));
        jButton5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
        jButton5.setForeground(new java.awt.Color(255, 255, 255));
-       jButton5.setText("To Checkout");
+       jButton5.setText("Log Out");
        jButton5.addActionListener(new java.awt.event.ActionListener() {
            public void actionPerformed(java.awt.event.ActionEvent evt) {
                jButton5ActionPerformed(evt);
@@ -919,7 +925,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
    private javax.swing.JPanel jPanel6;
    private javax.swing.JPanel jPanel7;
    private javax.swing.JTabbedPane jTabbedPane1;
-   private javax.swing.JTextField jTextField1;
+   private javax.swing.JLabel jTextField1;
    private javax.swing.JTextField jTextField2;
    private javax.swing.JTextField jTextField3;
    private javax.swing.JTextField jTextField4;
