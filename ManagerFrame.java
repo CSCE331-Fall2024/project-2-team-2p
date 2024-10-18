@@ -24,10 +24,20 @@ public class ManagerFrame {
     private ArrayList<HashMap<String, Object>> employees;
     private ArrayList<HashMap<String, Object>> orders;
     private HashMap<Integer, ArrayList<Integer>> ingredientsmenuitems = new HashMap<>();
+    private ArrayList<HashMap<String, Object>> viewOrders;
+
+    // data structures for removed entries
+    private ArrayList<HashMap<String, Object>> removedMenuItems; 
+    private ArrayList<HashMap<String, Object>> removedIngredients;
+    private ArrayList<HashMap<String, Object>> removedEmployees;
 
     private DefaultTableModel tableModel;
 
     private DBConnection connect;
+
+    //TODO: make sure user is found
+    private String  placeholdUsername = "Zophous";
+    private int placeholdPin = 1111;
 
     public ManagerFrame(String username, int pin) {
         // initializing data structures for the popups
@@ -38,8 +48,10 @@ public class ManagerFrame {
 
         //connect to database
         connect = new DBConnection(true); //true for manager view
-        connect.verifyCredentials(username, pin);
+        connect.verifyCredentials(placeholdUsername, placeholdPin);
 
+        /* functions done in DBConnection instead. TODO: ensure correctness
+        */
         connect.populateMenuItems(menuItems);
         connect.populateIngredients(ingredients);
         connect.populateEmployees(employees);
