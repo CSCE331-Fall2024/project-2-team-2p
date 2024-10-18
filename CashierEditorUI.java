@@ -620,6 +620,13 @@ public class CashierEditorUI extends javax.swing.JFrame {
            }
        });
 
+       ImageIcon icon = new ImageIcon(new javax.swing.ImageIcon(getClass().getResource("image 9.png")).getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH));
+
+        // 2. Create a JLabel for the image
+        JLabel imageLabel = new JLabel();
+        imageLabel.setIcon(icon);
+
+        // 3. Set the layout to include the new image below the log out button
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
 
@@ -636,7 +643,9 @@ public class CashierEditorUI extends javax.swing.JFrame {
                         .addGap(30, 30, 30)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            // Add the image label below the button
+                            .addComponent(imageLabel))))  // <-- Add this line to position the image below the button
                 .addContainerGap(50, Short.MAX_VALUE))
         );
 
@@ -653,10 +662,12 @@ public class CashierEditorUI extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        // Add space between the button and image
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                        .addComponent(imageLabel)))  // <-- Add this line to position the image below the button
                 .addGap(66, 66, 66))
         );
-
         // Set the initial size of the JFrame (starting screen)
         setPreferredSize(new Dimension(1150, 700)); // Adjusted the JFrame size to accommodate the wider TabbedPane
         setSize(1150, 700); // Apply the preferred size
