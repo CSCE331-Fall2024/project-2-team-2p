@@ -620,7 +620,7 @@ public class CashierEditorUI extends javax.swing.JFrame {
            }
        });
 
-       ImageIcon icon = new ImageIcon(new javax.swing.ImageIcon(getClass().getResource("image 9.png")).getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH));
+       ImageIcon icon = new ImageIcon(new javax.swing.ImageIcon(getClass().getResource("image9.png")).getImage().getScaledInstance(50, 50, java.awt.Image.SCALE_SMOOTH));
 
         // 2. Create a JLabel for the image
         JLabel imageLabel = new JLabel();
