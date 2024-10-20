@@ -658,16 +658,16 @@ public class DBConnection {
                 stmt.setDate(1, currentDate);
 
                 ResultSet rs = stmt.executeQuery();
-                double amountUsed = 0;
+                int amountUsed = 0;
                 HashMap<String, Object> row = new HashMap<>();
                 while (rs.next()) {
-                    amountUsed += rs.getDouble("total_used");
+                    amountUsed += rs.getInt("total_used");
                 }
                 row.put("amount", amountUsed);
                 row.put("date", currentDate);
                 usageData.add(row);
+                cal.add(Calendar.DATE, 1);
             }
-            cal.add(Calendar.DATE, 1);
 
         } catch (SQLException e) {
             e.printStackTrace();

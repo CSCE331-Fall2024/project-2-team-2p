@@ -88,8 +88,8 @@ public class InventoryTablePanel extends JPanel {
         // Populate the table with the fetched data
         if (usageData != null) {
             for (HashMap<String, Object> dailyUsage : usageData) {
-                String day = (String) dailyUsage.get("Day");
-                Integer amount = (Integer) dailyUsage.get("Amount");
+                String day = (dailyUsage.get("date").toString());
+                Integer amount = (Integer) dailyUsage.get("amount");
                 tableModel.addRow(new Object[]{day, amount});
             }
         }

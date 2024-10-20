@@ -115,6 +115,10 @@ public class ManagerFrame {
         orderIngredientsButton.setBackground(new java.awt.Color(231, 81, 82));
         buttonPanel.add(orderIngredientsButton);
 
+        JButton logoutButton = new JButton("Log Out");
+        logoutButton.setBackground(new java.awt.Color(231, 81, 82));
+        buttonPanel.add(logoutButton);
+
         centerPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         // Add center panel to the main panel
@@ -134,6 +138,13 @@ public class ManagerFrame {
         // ####################################################
         // ACTION LISTENERS TO TRIGGER SUB VIEWS
         // ####################################################
+
+        logoutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                new LoginPage();
+            }
+        });
 
         orderIngredientsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
