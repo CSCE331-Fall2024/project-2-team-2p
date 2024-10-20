@@ -642,7 +642,35 @@ public class DBConnection {
     }
 
     public void getIngredientInTimeframe(Date startDate, Date endDate, String ingredientName, ArrayList<HashMap<String, Object>> usageData) {
-        System.out.println("Needs implementation");
+        String query = "SELECT mi.name AS menu_item, im.ingredient_name, SUM(im.quantity) AS total_used " +
+                   "FROM orders o " +
+                   "JOIN menuitemsorders mio ON o.id = mio.orderkey " +
+                   "JOIN menuitems mi ON mio.menuitemkey = mi.id " +
+                   "JOIN ingredientsmenuitems im ON mi.id = im.menuitemkey " +
+                   "WHERE o.timestamp BETWEEN ? AND ? " +
+                   "AND im.ingredient_name = ? " +
+                   "GROUP BY mi.name, im.ingredient_name";
+
+        try{
+            PreparedStatement stmt = conn.prepareStatement(query);
+
+            stmt.setDate(1, new java.sql.Date(startDate.getTime()));
+            stmt.setDate(2, new java.sql.Date(endDate.getTime()));
+            stmt.setString(3, ingredientName);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                HashMap<String, Object> row = new HashMap<>();
+                row.put("menu_item", rs.getString("menu_item"));
+                row.put("ingredient_name", rs.getString("ingredient_name"));
+                row.put("total_used", rs.getDouble("total_used"));
+                usageData.add(row);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
 
