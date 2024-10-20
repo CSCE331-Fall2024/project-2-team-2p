@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Date;
 
 public class ManagerFrame {
 
@@ -678,10 +679,21 @@ public class ManagerFrame {
         zReportDialog.setLayout(new BorderLayout());
     
         // Create a JTable for the Z-Report
-        String[] columnNames = {"Type", "Sales", "Tax", "Payment Methods", "Total Cash", "Discounts", "Voids", "Service Charges"};
-        Object[][] data = {}; // Empty data for now
+        String[] columnNames = {"Hour", "Sales", "Revenue"};
+        ArrayList<HashMap<String, Object>> dataArr;
+        Date day = null; //TODO: replace with current day
+        connect.getXReport(day, dataArr);
+
+        Object[][] dataObj = new Object[dataArr.size()][3];
+
+        for (int i = 0; i < dataArr.size(); i++) {
+            HashMap<String, Object> map = dataArr.get(i);
+            dataObj[i][0] = map.get("hour");
+            dataObj[i][1] = map.get("sales_count");
+            dataObj[i][2] = map.get("total_revenue");
+        }
     
-        JTable zReportTable = new JTable(data, columnNames);
+        JTable zReportTable = new JTable(dataObj, columnNames);
         JScrollPane zScrollPane = new JScrollPane(zReportTable);
         zReportDialog.add(zScrollPane, BorderLayout.CENTER);
     

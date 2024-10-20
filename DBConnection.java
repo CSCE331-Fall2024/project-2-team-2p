@@ -673,6 +673,56 @@ public class DBConnection {
             e.printStackTrace();
         }
     }
+
+    public void getXReport(Date day, ArrayList<HashMap<String, Object>> reportData) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dayStr = sdf.format(day);
+
+        String query = "SELECT DATE_TRUNC('hour', o.timestamp) AS hour, COUNT(o.id) AS sales_count, SUM(o.price) AS total_revenue FROM orders o WHERE o.timestamp::date = ? GROUP BY DATE_TRUNC('hour', o.timestamp) ORDER BY hour;";
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, dayStr);
+            
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                HashMap<String, Object> hourData = new HashMap<>();
+                hourData.put("hour", rs.getTimestamp("hour"));
+                hourData.put("sales_count", rs.getInt("sales_count"));
+                hourData.put("total_revenue", rs.getDouble("total_revenue"));
+                reportData.add(hourData);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getZReport(Date day, ArrayList<HashMap<String, Object>> reportData) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dayStr = sdf.format(day);
+
+        String query = "SELECT DATE_TRUNC('hour', o.timestamp) AS hour, COUNT(o.id) AS sales_count, SUM(o.price) AS total_revenue FROM orders o WHERE o.timestamp::date = ? GROUP BY DATE_TRUNC('hour', o.timestamp) ORDER BY hour;";
+
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, dayStr);
+            
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                HashMap<String, Object> hourData = new HashMap<>();
+                hourData.put("hour", rs.getTimestamp("hour"));
+                hourData.put("sales_count", rs.getInt("sales_count"));
+                hourData.put("total_revenue", rs.getDouble("total_revenue"));
+                reportData.add(hourData);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
     // public static void main(String[] args) {
