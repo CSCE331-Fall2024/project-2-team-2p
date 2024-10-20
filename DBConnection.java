@@ -682,7 +682,7 @@ public class DBConnection {
 
         try {
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setDate(1, (java.sql.Date) day);
+            stmt.setDate(1, new java.sql.Date(day.getTime()));
             
             ResultSet rs = stmt.executeQuery();
 
@@ -707,7 +707,7 @@ public class DBConnection {
 
         try {
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setDate(1, (java.sql.Date) day);
+            stmt.setDate(1, new java.sql.Date(day.getTime()));
             
             ResultSet rs = stmt.executeQuery();
 
