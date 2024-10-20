@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class ManagerFrame {
 
@@ -654,10 +656,22 @@ public class ManagerFrame {
         xReportDialog.setLayout(new BorderLayout());
     
         // Create a JTable for the X-Report
-        String[] columnNames = {"Hour", "Sales", "Returns", "Voids", "Discards", "Payment Methods"};
-        Object[][] data = {}; // Empty data for now
+        String[] columnNames = {"Hour", "Sales", "Revenue"};
+        ArrayList<HashMap<String, Object>> dataArr = new ArrayList<>();
+        LocalDateTime time = LocalDateTime.now();
+        Date day = Date.from(time.atZone(ZoneId.systemDefault()).toInstant());
+        connect.getXReport(day, dataArr);
+
+        Object[][] dataObj = new Object[dataArr.size()][3];
+
+        for (int i = 0; i < dataArr.size(); i++) {
+            HashMap<String, Object> map = dataArr.get(i);
+            dataObj[i][0] = map.get("hour");
+            dataObj[i][1] = map.get("sales_count");
+            dataObj[i][2] = map.get("total_revenue");
+        }
     
-        JTable xReportTable = new JTable(data, columnNames);
+        JTable xReportTable = new JTable(dataObj, columnNames);
         JScrollPane xScrollPane = new JScrollPane(xReportTable);
         xReportDialog.add(xScrollPane, BorderLayout.CENTER);
     
@@ -680,9 +694,10 @@ public class ManagerFrame {
     
         // Create a JTable for the Z-Report
         String[] columnNames = {"Hour", "Sales", "Revenue"};
-        ArrayList<HashMap<String, Object>> dataArr;
-        Date day = null; //TODO: replace with current day
-        connect.getXReport(day, dataArr);
+        ArrayList<HashMap<String, Object>> dataArr = new ArrayList<>();
+        LocalDateTime time = LocalDateTime.now();
+        Date day = Date.from(time.atZone(ZoneId.systemDefault()).toInstant());
+        connect.getZReport(day, dataArr);
 
         Object[][] dataObj = new Object[dataArr.size()][3];
 
