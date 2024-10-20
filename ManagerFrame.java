@@ -97,8 +97,8 @@ public class ManagerFrame {
         centerPanel.setLayout(new BorderLayout());
 
         // Inventory Table Panel
-        //InventoryTablePanel inventoryTablePanel = new InventoryTablePanel(connect, ingredientNames);
-        //centerPanel.add(inventoryTablePanel, BorderLayout.CENTER);
+        InventoryTablePanel inventoryTablePanel = new InventoryTablePanel(connect, ingredientNames);
+        centerPanel.add(inventoryTablePanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10)); // Arrange buttons in a row
