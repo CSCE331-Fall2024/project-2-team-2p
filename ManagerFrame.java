@@ -16,7 +16,9 @@ public class ManagerFrame {
     private JButton menuButton;
     private JButton inventoryButton;
     private JButton employeesButton;
-    private JButton reportsButton;
+    private JButton xReportButton;
+    private JButton zReportButton;
+    private JButton orderIngredientsButton;
 
     // data structures for the pop-ups
     private ArrayList<HashMap<String, Object>> menuItems; 
@@ -25,6 +27,7 @@ public class ManagerFrame {
     private ArrayList<HashMap<String, Object>> orders;
     private HashMap<Integer, ArrayList<Integer>> ingredientsmenuitems = new HashMap<>();
     private ArrayList<HashMap<String, Object>> viewOrders;
+    private ArrayList<String> ingredientNames;
 
     // data structures for removed entries
     private ArrayList<HashMap<String, Object>> removedMenuItems; 
@@ -41,18 +44,23 @@ public class ManagerFrame {
         ingredients = new ArrayList<>();
         employees = new ArrayList<>();
         orders = new ArrayList<>();
+        ingredientNames = new ArrayList<>();
 
         //connect to database
         connect = new DBConnection(true); //true for manager view
         connect.verifyCredentials(username, pin);
 
-        /* functions done in DBConnection instead. TODO: ensure correctness
-        */
+        // /* functions done in DBConnection instead. TODO: ensure correctness
+        // */
         connect.populateMenuItems(menuItems);
         connect.populateIngredients(ingredients);
         connect.populateEmployees(employees);
         connect.populateOrders(orders);
 
+        for (HashMap<String, Object> ingredient : ingredients) {
+            String name = (String) ingredient.get("name");
+            ingredientNames.add(name);
+        }
 
         // Set up the frame
         frame = new JFrame("Panda Express POS System - Manager");
@@ -71,18 +79,42 @@ public class ManagerFrame {
 
         displayOrders(orderPanel);
 
+        try {
+            ImageIcon logoIcon = new ImageIcon("logo9.png");  // Path to your image
+            JLabel logoLabel = new JLabel(logoIcon);
+            orderPanel.add(Box.createVerticalGlue());  // Add space to push the image to the bottom
+            orderPanel.add(logoLabel);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         mainPanel.add(orderPanel, BorderLayout.WEST);
 
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BorderLayout());
 
-        graphLabel = new JLabel(new ImageIcon("placeholder_graph.png"));  // Placeholder graph
-        centerPanel.add(graphLabel, BorderLayout.CENTER);
+        // Inventory Table Panel
+        InventoryTablePanel inventoryTablePanel = new InventoryTablePanel(connect, ingredientNames);
+        centerPanel.add(inventoryTablePanel, BorderLayout.CENTER);
 
-        JButton orderIngredientsButton = new JButton("Order Ingredients");
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10)); // Arrange buttons in a row
+
+        xReportButton = new JButton("X-Report");
+        xReportButton.setBackground(new java.awt.Color(231, 81, 82));
+        buttonPanel.add(xReportButton);
+
+        zReportButton = new JButton("Z-Report");
+        zReportButton.setBackground(new java.awt.Color(231, 81, 82));
+        buttonPanel.add(zReportButton);
+
+        orderIngredientsButton = new JButton("Order Ingredients");
         orderIngredientsButton.setBackground(new java.awt.Color(231, 81, 82));
-        centerPanel.add(orderIngredientsButton, BorderLayout.SOUTH);
+        buttonPanel.add(orderIngredientsButton);
 
+        centerPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Add center panel to the main panel
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
         JPanel rightPanel = new JPanel();
@@ -127,6 +159,20 @@ public class ManagerFrame {
         employeesButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showEmployeeManagement();
+            }
+        });
+
+        xReportButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Call a method to generate the X-Report
+                showXReport();
+            }
+        });
+
+        zReportButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Call a method to generate the Z-Report
+                showZReport();
             }
         });
 
@@ -594,6 +640,61 @@ public class ManagerFrame {
     
         orderPanel.revalidate();
         orderPanel.repaint();
+    }
+
+    // #########################################################
+    // REPORTS
+    // #########################################################
+
+    private void showXReport() {
+        // Create a new dialog for the X-Report
+        JDialog xReportDialog = new JDialog(frame, "X-Report", true);
+        xReportDialog.setSize(500, 400);
+        xReportDialog.setLayout(new BorderLayout());
+    
+        // Create a JTable for the X-Report
+        String[] columnNames = {"Hour", "Sales", "Returns", "Voids", "Discards", "Payment Methods"};
+        Object[][] data = {}; // Empty data for now
+    
+        JTable xReportTable = new JTable(data, columnNames);
+        JScrollPane xScrollPane = new JScrollPane(xReportTable);
+        xReportDialog.add(xScrollPane, BorderLayout.CENTER);
+    
+        // Add a Close button
+        JPanel buttonPanel = new JPanel();
+        JButton closeButton = new JButton("Close");
+        closeButton.addActionListener(e -> xReportDialog.dispose());
+        buttonPanel.add(closeButton);
+    
+        xReportDialog.add(buttonPanel, BorderLayout.SOUTH);
+        
+        // Show the dialog
+        xReportDialog.setVisible(true);
+    }
+
+    private void showZReport() {
+        JDialog zReportDialog = new JDialog(frame, "Z-Report", true);
+        zReportDialog.setSize(500, 400);
+        zReportDialog.setLayout(new BorderLayout());
+    
+        // Create a JTable for the Z-Report
+        String[] columnNames = {"Type", "Sales", "Tax", "Payment Methods", "Total Cash", "Discounts", "Voids", "Service Charges"};
+        Object[][] data = {}; // Empty data for now
+    
+        JTable zReportTable = new JTable(data, columnNames);
+        JScrollPane zScrollPane = new JScrollPane(zReportTable);
+        zReportDialog.add(zScrollPane, BorderLayout.CENTER);
+    
+        // Add a Close button
+        JPanel buttonPanel = new JPanel();
+        JButton closeButton = new JButton("Close");
+        closeButton.addActionListener(e -> zReportDialog.dispose());
+        buttonPanel.add(closeButton);
+    
+        zReportDialog.add(buttonPanel, BorderLayout.SOUTH);
+        
+        // Show the dialog
+        zReportDialog.setVisible(true);
     }
 
     public static void main(String[] args) {

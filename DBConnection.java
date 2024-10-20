@@ -1,6 +1,8 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DBConnection {
     private Connection conn = null;
@@ -637,6 +639,10 @@ public class DBConnection {
             return false;
         }
         return true;
+    }
+
+    public void getIngredientInTimeframe(Date startDate, Date endDate, String ingredientName, ArrayList<HashMap<String, Object>> usageData) {
+        System.out.println("Needs implementation");
     }
 }
 
