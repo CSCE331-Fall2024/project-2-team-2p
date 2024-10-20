@@ -690,7 +690,7 @@ public class DBConnection {
                 HashMap<String, Object> hourData = new HashMap<>();
                 hourData.put("hour", rs.getTimestamp("hour"));
                 hourData.put("sales_count", rs.getInt("sales_count"));
-                hourData.put("total_revenue", rs.getDouble("total_revenue"));
+                hourData.put("total_revenue", Math.round(rs.getDouble("total_revenue") * 100.0) / 100.0);
                 reportData.add(hourData);
             }
 
@@ -715,7 +715,7 @@ public class DBConnection {
                 HashMap<String, Object> hourData = new HashMap<>();
                 hourData.put("hour", rs.getTimestamp("hour"));
                 hourData.put("sales_count", rs.getInt("sales_count"));
-                hourData.put("total_revenue", rs.getDouble("total_revenue"));
+                hourData.put("total_revenue", Math.round(rs.getDouble("total_revenue") * 100.0) / 100.0);
                 reportData.add(hourData);
             }
 
