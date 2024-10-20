@@ -9,7 +9,7 @@ public class DBConnection {
     private static final String user = "team_2p";
     private static final String password = "pawmo";
     private static final String dbName = "team_2p_db";
-    private String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
+    private String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName/* + "?connectTimeout=60"*/;
     public boolean manager = false;
     private String employee;
 
@@ -642,14 +642,7 @@ public class DBConnection {
     }
 
     public void getIngredientInTimeframe(Date startDate, Date endDate, String ingredientName, ArrayList<HashMap<String, Object>> usageData) {
-        String query = "SELECT mi.name AS menu_item, im.ingredient_name, SUM(im.quantity) AS total_used " +
-                   "FROM orders o " +
-                   "JOIN menuitemsorders mio ON o.id = mio.orderkey " +
-                   "JOIN menuitems mi ON mio.menuitemkey = mi.id " +
-                   "JOIN ingredientsmenuitems im ON mi.id = im.menuitemkey " +
-                   "WHERE o.timestamp BETWEEN ? AND ? " +
-                   "AND im.ingredient_name = ? " +
-                   "GROUP BY mi.name, im.ingredient_name";
+        String query = "SELECT mi.name AS menu_item, ing.name AS ingredient_name, SUM(im.quantity) AS total_used FROM orders o JOIN menuitemsorders mio ON o.id = mio.orderkey JOIN menuitems mi ON mio.menuitemkey = mi.id JOIN ingredientsmenuitems im ON mi.id = im.menuitemkey JOIN ingredients ing ON im.ingredientkey = ing.id WHERE o.timestamp BETWEEN ? AND ? AND ing.name = ? GROUP BY mi.name, ing.name;";
 
         try{
             PreparedStatement stmt = conn.prepareStatement(query);
