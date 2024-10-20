@@ -1,5 +1,6 @@
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -642,24 +643,31 @@ public class DBConnection {
     }
 
     public void getIngredientInTimeframe(Date startDate, Date endDate, String ingredientName, ArrayList<HashMap<String, Object>> usageData) {
-        String query = "SELECT mi.name AS menu_item, ing.name AS ingredient_name, SUM(im.quantity) AS total_used FROM orders o JOIN menuitemsorders mio ON o.id = mio.orderkey JOIN menuitems mi ON mio.menuitemkey = mi.id JOIN ingredientsmenuitems im ON mi.id = im.menuitemkey JOIN ingredients ing ON im.ingredientkey = ing.id WHERE o.timestamp BETWEEN ? AND ? AND ing.name = ? GROUP BY mi.name, ing.name;";
+        String query = "SELECT mi.name AS menu_item, ing.name AS ingredient_name, SUM(im.quantity) AS total_used FROM orders o JOIN menuitemsorders mio ON o.id = mio.orderkey JOIN menuitems mi ON mio.menuitemkey = mi.id JOIN ingredientsmenuitems im ON mi.id = im.menuitemkey JOIN ingredients ing ON im.ingredientkey = ing.id WHERE o.timestamp::date = ? AND ing.name = ? GROUP BY mi.name, ing.name;";
 
         try{
             PreparedStatement stmt = conn.prepareStatement(query);
 
-            stmt.setDate(1, new java.sql.Date(startDate.getTime()));
-            stmt.setDate(2, new java.sql.Date(endDate.getTime()));
-            stmt.setString(3, ingredientName);
+            stmt.setString(2, ingredientName);
 
-            ResultSet rs = stmt.executeQuery();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(startDate);
 
-            while (rs.next()) {
+            while (!cal.getTime().after(endDate)) {
+                java.sql.Date currentDate = new java.sql.Date(cal.getTimeInMillis());
+                stmt.setDate(1, currentDate);
+
+                ResultSet rs = stmt.executeQuery();
+                double amountUsed = 0;
                 HashMap<String, Object> row = new HashMap<>();
-                row.put("menu_item", rs.getString("menu_item"));
-                row.put("ingredient_name", rs.getString("ingredient_name"));
-                row.put("total_used", rs.getDouble("total_used"));
+                while (rs.next()) {
+                    amountUsed += rs.getDouble("total_used");
+                }
+                row.put("amount", amountUsed);
+                row.put("date", currentDate);
                 usageData.add(row);
             }
+            cal.add(Calendar.DATE, 1);
 
         } catch (SQLException e) {
             e.printStackTrace();
