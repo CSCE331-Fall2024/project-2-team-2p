@@ -16,15 +16,20 @@ public class InventoryTablePanel extends JPanel {
     private JTable usageTable;
     private DefaultTableModel tableModel;
 
-    private DBConnection connect; // Assume this is the backend connection object
+    private DBConnection connect;
 
+    /**
+     * Constructor for the inventory data panel
+     * @author Timur Takhtarov
+     * @param connection the connection API
+     * @param ingredients the list of ingredients to populate the dropdown
+     */
     public InventoryTablePanel(DBConnection connect, ArrayList<String> ingredients) {
         this.connect = connect;
 
         // Set layout
         setLayout(new BorderLayout());
 
-        // Time window selection (e.g., Last week, Last month)
         String[] timeWindows = {"Last Week", "Last Month", "Last Year"};
         timeWindowBox = new JComboBox<>(timeWindows);
 
@@ -47,7 +52,6 @@ public class InventoryTablePanel extends JPanel {
         add(selectionPanel, BorderLayout.NORTH);
         add(tableScrollPane, BorderLayout.CENTER);
 
-        // Add action listeners for the JComboBoxes to update the table
         timeWindowBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -66,7 +70,6 @@ public class InventoryTablePanel extends JPanel {
         updateTable();
     }
 
-    // Method to populate the table based on selected time window and ingredient type
     private void updateTable() {
         // Clear existing rows
         tableModel.setRowCount(0);
@@ -95,7 +98,6 @@ public class InventoryTablePanel extends JPanel {
         }
     }
 
-    // Helper method to determine the start and end dates based on the selected time window
     private Date[] getTimeRange(String timeWindow) {
         Calendar calendar = Calendar.getInstance();
         Date endDate = calendar.getTime();  // End date is today
