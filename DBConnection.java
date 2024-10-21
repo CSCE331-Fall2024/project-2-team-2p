@@ -642,6 +642,14 @@ public class DBConnection {
         return true;
     }
 
+    /**
+     * Retrieves amount of ingredient used between a certain timeframe
+     * @author Matthew Fisher
+     * @param startDate the date to begin search
+     * @param endDate the date to conclude search
+     * @param ingredientName the ingreident to search for
+     * @param usageData arraylist to store output
+     */
     public void getIngredientInTimeframe(Date startDate, Date endDate, String ingredientName, ArrayList<HashMap<String, Object>> usageData) {
         String query = "SELECT mi.name AS menu_item, ing.name AS ingredient_name, SUM(im.quantity) AS total_used FROM orders o JOIN menuitemsorders mio ON o.id = mio.orderkey JOIN menuitems mi ON mio.menuitemkey = mi.id JOIN ingredientsmenuitems im ON mi.id = im.menuitemkey JOIN ingredients ing ON im.ingredientkey = ing.id WHERE o.timestamp::date = ? AND ing.name = ? GROUP BY mi.name, ing.name;";
 
@@ -674,10 +682,13 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Retrieves X report for sales and revenue
+     * @author Matthew Fisher
+     * @param day the date to search
+     * @param reportData arraylist to store data
+     */
     public void getXReport(Date day, ArrayList<HashMap<String, Object>> reportData) {
-        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        //String dayStr = sdf.format(day);
-
         String query = "SELECT DATE_TRUNC('hour', o.timestamp) AS hour, COUNT(o.id) AS sales_count, SUM(o.price) AS total_revenue FROM orders o WHERE o.timestamp::date = ? GROUP BY DATE_TRUNC('hour', o.timestamp) ORDER BY hour;";
 
         try {
@@ -699,10 +710,13 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Retrieves Z report for sales and revenue
+     * @author Matthew Fisher
+     * @param day the date to search
+     * @param reportData arraylist to store data
+     */
     public void getZReport(Date day, ArrayList<HashMap<String, Object>> reportData) {
-        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        //String dayStr = sdf.format(day);
-
         String query = "SELECT DATE_TRUNC('hour', o.timestamp) AS hour, COUNT(o.id) AS sales_count, SUM(o.price) AS total_revenue FROM orders o WHERE o.timestamp::date = ? GROUP BY DATE_TRUNC('hour', o.timestamp) ORDER BY hour;";
 
         try {
