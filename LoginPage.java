@@ -7,6 +7,10 @@ class LoginPage extends JFrame implements ActionListener {
     JPasswordField passwordField;
     JButton loginButton;
 
+    /***
+     * @author Myles
+     * Login page to go between Cashier and Manager Side
+     */
     public LoginPage() {
         setTitle("Login Page");
         setSize(300, 150);
